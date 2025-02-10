@@ -10,4 +10,4 @@ app.get("/", (req, res) => {
   res.send("API de la app bancaria funcionando!");
 });
 
-app.listen(3000, () => console.log("Backend corriendo en http://localhost:3000"));
+app.listen(process.env.PORT, () => console.log("Backend corriendo en http://localhost:3306"));
