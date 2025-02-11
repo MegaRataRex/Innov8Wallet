@@ -17,8 +17,8 @@ app.post("/api/transaction",(req,res)  => {
 
 const SECRET_KEY = process.env.SECRET_KEY || "clave_secreta_segura";
 
-app.post("/api/agregarTarjeta", (req, res) => {
-    const { tarjeta, cvv } = req.body;
+app.post("/api/addCard", (req, res) => {
+    const { card, cvv } = req.body;
 
     // Desencriptar número de tarjeta
     const decryptedBytes = CryptoJS.AES.decrypt(tarjeta, SECRET_KEY);
