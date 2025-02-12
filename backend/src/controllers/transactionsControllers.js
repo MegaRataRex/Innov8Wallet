@@ -16,6 +16,11 @@ exports.addTransaction = (req,res) => {
     res.json({ description, amount, category });
 
     db.query(
-        "INSERT INTO TRANSACTIONS "
-    )
-}
+        "INSERT INTO transactions (user_id, amount, category, type, description) VALUES (?, ?, ?, ?, ?)",
+        [userId, amount, category, type, description],
+        (err, result) => {
+          if (err) return res.status(500).json({ error: "Error al guardar la transacción" });
+          res.status(201).json({ message: "Transacción guardada", transactionId: result.insertId });
+        }
+      );
+    };
