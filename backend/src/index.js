@@ -20,7 +20,6 @@ const SECRET_KEY = process.env.SECRET_KEY || "clave_secreta_segura";
 app.post("/api/addCard", (req, res) => {
     const { card, cvv } = req.body;
 
-    // Desencriptar número de tarjeta
     const decryptedBytes = CryptoJS.AES.decrypt(tarjeta, SECRET_KEY);
     const decryptedCardNumber = decryptedBytes.toString(CryptoJS.enc.Utf8);
 
