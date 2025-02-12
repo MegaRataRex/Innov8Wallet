@@ -24,3 +24,12 @@ exports.addTransaction = (req,res) => {
         }
       );
     };
+
+exports.getTransactions = (req, res) => {
+  const userId = req.user.userId;
+
+  db.query("SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC", [userId], (err, results) => {
+    if (err) return res.status(500).json({ error: "Error obteniendo transacciones" });
+    res.json(results);
+  });
+};
