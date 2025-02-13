@@ -61,3 +61,23 @@ function calculateNextChargeDate(lastChargeDate) {
   date.setMonth(date.getMonth() + 1); // Asume una recurrencia mensual
   return date;
 };
+
+//Función para calcular ahorros
+const { calculateMonthlySavings, calculateRetirementSavings, suggestAdjustments } = require("../util/savingsCalculator");
+
+exports.calculateSavings = (req, res) => {
+    const { goalAmount, deadline, currentSavings, expectedRetirementAge, lifeExpectancy, desiredAnnualIncome, userIncome } = req.body;
+
+    if (goalAmount && deadline) {
+        const result = calculateMonthlySavings(goalAmount, deadline, currentSavings);
+        const adjustment = suggestAdjustments(goalAmount, currentSavings, result.monthlySavings, userIncome, result.monthsRemaining);
+        return res.json({ ...result, ...adjustment });
+    }
+
+    if (expectedRetirementAge && lifeExpectancy && desiredAnnualIncome) {
+        const result = calculateRetirementSavings(expectedRetirementAge, lifeExpectancy, desiredAnnualIncome, currentSavings);
+        return res.json(result);
+    }
+
+    res.status(400).json({ error: "Faltan parámetros para realizar los cálculos." });
+};

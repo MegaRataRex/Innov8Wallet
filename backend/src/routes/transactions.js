@@ -1,5 +1,5 @@
 const express = require("express");
-const { processTransaction, getSubscriptions } = require("../controllers/transactionController");
+const { processTransaction, getSubscriptions, calculateSavings } = require("../controllers/transactionController");
 
 const router = express.Router();
 
@@ -7,6 +7,7 @@ const router = express.Router();
 router.post("/", processTransaction);
 // 📌 Nueva ruta para obtener suscripciones
 router.get("/subscriptions", getSubscriptions); // Aplica autenticación si es necesario
-
+// 📌 Ruta para calcular ahorros
+router.post("/savings", calculateSavings);
 
 module.exports = router;
