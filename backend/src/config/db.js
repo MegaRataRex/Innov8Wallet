@@ -14,10 +14,9 @@ db.connect((err) => {
   if (err) {
     console.error("❌ Error conectando a MySQL:", err.message);
   } else {
+    db.query("USE users");
     console.log("✅ Conectado a MySQL correctamente");
   }
 });
-
-
 
 module.exports = db;
