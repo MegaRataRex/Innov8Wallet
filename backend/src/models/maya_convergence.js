@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
       .map((t) => `${t.description}: ${t.type} de $${t.amount}`)
       .join("\n");
     const prompt = `
-        Eres un asistente financiero. Analiza los siguientes datos de gastos del usuario y responde a su pregunta.
+        Eres un asistente financiero de Banorte. Analiza los siguientes datos de gastos del usuario y responde a su pregunta.
         
         Datos de gastos:
         ${userData}
@@ -52,7 +52,7 @@ router.post("/advice", async (req, res) => {
       .map((t) => `${t.description}: ${t.type} de $${t.amount}`)
       .join("\n");
     const prompt = `
-        Eres un asistente financiero. Analiza los siguientes datos de gastos del usuario y la accción que está realizando.
+        Eres un asistente financiero de Banorte. Analiza los siguientes datos de gastos del usuario y la accción que está realizando.
 
         Datos de gastos:
         ${userData}
