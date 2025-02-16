@@ -1,8 +1,9 @@
 import OpenAI from "openai";
 const openai = new OpenAI();
-const router = express.Router();
+const express = require("express");
 const openai = require("openai");
 const db = require("../config/db");
+const router = express.Router();
 
 const openaiClient = new openai.OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
 

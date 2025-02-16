@@ -1,5 +1,5 @@
 añadir subcategorías a la base de datos - COMPLETADO.
-hacer una función para determinar variables temporales en una compra -
+hacer una función para determinar variables temporales en una compra - COMPLETADO 
 
 
 
