@@ -1,5 +1,3 @@
-import OpenAI from "openai";
-const openai = new OpenAI();
 const express = require("express");
 const openai = require("openai");
 const db = require("../config/db");

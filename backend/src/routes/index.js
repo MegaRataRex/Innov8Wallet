@@ -14,6 +14,6 @@ router.use("/predict", spendingModel);
 
 module.exports = router;
 
-app.get("/", (req, res) => {
+router.get("/", (req, res) => {
   res.send("¡El backend está funcionando y conectado a MySQL!");
 });

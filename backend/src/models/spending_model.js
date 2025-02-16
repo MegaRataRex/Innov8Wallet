@@ -5,31 +5,19 @@ const router = express.Router();
 tf = require("@tensorflow/tfjs");
 prepare = require("../util/prepare_data");
 
-// Función que aplica pesos a las transacciones
-const weightedLayer = tf.layers.lambda({
-  function: (inputs) => {
-    const transactions = inputs[0]; // Transacciones de entrada
-    const weights = inputs[1]; // Pesos correspondientes
-    return transactions.mul(weights); // Multiplica cada transacción por su peso
-  },
-});
-
 // Definir el modelo con la capa de pesos
 function createModel(inputShape) {
   const transactionInput = tf.input({ shape: inputShape }); // Entrada de transacciones
   const weightInput = tf.input({ shape: [1] }); // Entrada de pesos (1 valor por transacción)
 
-  const weightedTransactions = weightedLayer.apply([
-    transactionInput,
-    weightInput,
-  ]);
+  const weightedTransactions = tf.layers
+    .multiply()
+    .apply([inputTransactions, inputWeights]);
 
-  const x = tf.layers
-    .dense({ units: 64, activation: "relu" })
-    .apply(weightedTransactions);
-  const output = tf.layers.dense({ units: 1 }).apply(x);
-
-  return tf.model({ inputs: [transactionInput, weightInput], outputs: output });
+  return tf.model({
+    inputs: [inputTransactions, inputWeights],
+    outputs: weightedTransactions,
+  });
 }
 
 router.post("/createModelForNextMonth", async (req, res) => {

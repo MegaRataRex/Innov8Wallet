@@ -1,5 +1,5 @@
-const db = require("../db");
-const { categorizeSpending } = require("../services/categorize");
+const db = require("../config/db");
+const { categorizeSpending } = require("./categorize");
 
 exports.addTransaction = (req, res) => {
   const { amount, category, type, description } = req.body;
