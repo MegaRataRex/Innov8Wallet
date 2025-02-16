@@ -1478,43 +1478,5 @@
         "Telmex",
         "Tinacos Rotoplas",
         "izzi"
-    ] ,
-    "Pantry": [
-        "Bodega Aurrera",
-        "Chedraui",
-        "Costco",
-        "Fresko",
-        "HEB",
-        "La Comer",
-        "LEY",
-        "Sam's Club",
-        "Soriana",
-        "Superama",
-        "Walmart"
-    ],
-    "Education": [
-        "EGADE Business School",
-        "IBERO",
-        "IPADE Business School",
-        "ITAM",
-        "ITESM",
-        "Prepa Tec",
-        "Tecmilenio",
-        "Tecnologico de Monterrey",
-        "Universidad Anahuac",
-        "Universidad Iberoamericana"
-    ],
-    "Subscriptions": [
-        "Amazon Prime",
-        "Apple Music",
-        "Disney+",
-        "Google Play",
-        "HBO Max",
-        "iCloud",
-        "Netflix",
-        "Spotify Premium",
-        "Xbox Game Pass",
-        "YouTube Premium"
     ]
-    
 }

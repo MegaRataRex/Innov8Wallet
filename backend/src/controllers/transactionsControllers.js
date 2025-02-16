@@ -1,23 +1,31 @@
 const db = require("../config/db");
-const { categorizeSpending } = require("./categorize");
+const { categorizeSpending, subCategorize } = require("./categorize");
 
 exports.addTransaction = (req, res) => {
-  const { amount, category, type, description } = req.body;
+  const {
+    amount,
+    category,
+    type,
+    description,
+    sub_category,
+    payment_method_id,
+  } = req.body;
   const userId = req.user.userId;
 
-  if (!amount || !type) {
+  if (!amount || !type || !payment_method_id) {
     return res.status(400).json({ error: "Todos los campos son requeridos" });
   }
 
   if (!category) {
     category = categorizeSpending(description);
+    sub_category = subCategorize(description);
   }
 
   res.json({ description, amount, category });
 
   db.query(
-    "INSERT INTO transactions (user_id, amount, category, type, description) VALUES (?, ?, ?, ?, ?)",
-    [userId, amount, category, type, description],
+    "INSERT INTO transactions (user_id, amount, category, type, description, sub_category, payment_method_id) VALUES (?, ?, ?, ?, ?, ? ,?)",
+    [userId, amount, category, type, description, sub_category],
     (err, result) => {
       if (err)
         return res
