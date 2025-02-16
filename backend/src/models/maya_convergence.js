@@ -56,7 +56,7 @@ router.post("/advice", async (req, res) => {
         Datos de gastos:
         ${userData}
 
-        Pregunta del usuario:
+        Acción del usuario:
         "${action}"
 
         Busca patrones o anomalías y responde con una recomendación financiera que le darías al usuario, asegúrate de dar un consejo claro y conciso. 
