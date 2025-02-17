@@ -23,13 +23,13 @@ async function prepareDataMonth(userId, category, paymentId) {
       MONTH(date) AS month,
       DAY(date) AS day,
       WEEKDAY(date) AS weekday,
-      category,
-      amount
+      CASE WHEN WEEKDAY(date) IN (5,6) THEN 1 ELSE 0 END AS is_weekend,
+      SUM(amount) AS total_spent
     FROM transactions 
     WHERE user_id = ? 
     ${stringSuffix} 
+    GROUP BY YEAR(date), MONTH(date), DAY(date), WEEKDAY(date)
     ORDER BY date DESC`;
-
     const [historicalTransactions] = await db.query(queryString, params);
 
     const sortedData = historicalTransactions.sort(
@@ -43,7 +43,7 @@ async function prepareDataMonth(userId, category, paymentId) {
 
     //retorna todos los datos recopilados
     return {
-      monthSpendings: historicalTransactions,
+      monthSpendings: filteredData,
     };
   } catch (err) {
     console.error("Error al obtener los datos:", err);

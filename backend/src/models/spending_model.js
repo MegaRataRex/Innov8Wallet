@@ -7,15 +7,15 @@ prepare = require("../util/prepare_data");
 
 // Definir el modelo con la capa de pesos
 function createModel(inputShape) {
-  const transactionInput = tf.input({ shape: inputShape }); // Entrada de transacciones
-  const weightInput = tf.input({ shape: [1] }); // Entrada de pesos (1 valor por transacción)
+  const transactionInput = tf.input({ shape: inputShape });
+  const weightInput = tf.input({ shape: [1] });
 
   const weightedTransactions = tf.layers
     .multiply()
-    .apply([inputTransactions, inputWeights]);
+    .apply([transactionInput, weightInput]);
 
   return tf.model({
-    inputs: [inputTransactions, inputWeights],
+    inputs: [transactionInput, weightInput],
     outputs: weightedTransactions,
   });
 }
@@ -24,13 +24,12 @@ router.post("/createModelForNextMonth", async (req, res) => {
   try {
     const model = createModel([5]);
 
-    const dataObject = prepareDataMonth(
+    const dataObject = await prepareDataMonth(
       req.body.user_id,
       req.body.category,
       req.body.payment_id
     );
-
-    const data = (await dataObject).historicalTransactions;
+    const data = dataObject.monthSpendings;
 
     data = data.map((d) => ({
       ...d,
@@ -38,11 +37,11 @@ router.post("/createModelForNextMonth", async (req, res) => {
     }));
 
     const xs = tf.tensor2d(
-      data.map((d) => [d.amount, d.category, d.day, d.weekday])
+      data.map((d) => [d.amount, d.category, d.day, d, weekday, d.is_weekend])
     );
     const weights = tf.tensor2d(data.map((d) => [d.weight])); // Pesos como tensor
 
-    const ys = tf.tensor2d(data.map((d) => [d.futureSpending])); // Etiqueta a predecir
+    const ys = tf.tensor2d(data.map((d) => [d.total_spent])); // Etiqueta a predecir
 
     // Compilar y entrenar el modelo
     model.compile({ optimizer: "adam", loss: "meanSquaredError" });
