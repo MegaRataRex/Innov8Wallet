@@ -1,4 +1,4 @@
-package com.innov8_wallet
+package com.innov8wallet
 
 import android.app.Application
 import com.facebook.react.PackageList
