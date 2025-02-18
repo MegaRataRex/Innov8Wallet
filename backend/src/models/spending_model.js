@@ -1,6 +1,6 @@
 const { calculateWeights } = require("../util/calculateWeight");
 const express = require("express");
-const prepareDataMonth = require("../util/prepare_data");
+const { prepareDataMonth } = require("../util/prepare_data");
 const router = express.Router();
 tf = require("@tensorflow/tfjs");
 prepare = require("../util/prepare_data");
