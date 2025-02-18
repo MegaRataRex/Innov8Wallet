@@ -5,7 +5,10 @@ const Stack = createStackNavigator();
 
 export function Navigation() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+    screenOptions={{
+      headerShown: false
+      }}>
       <Stack.Screen name="LoadingStart" component={LoadingStartScreen} />
     </Stack.Navigator>
   );
