@@ -4,18 +4,17 @@
  *
  * @format
  */
-
+import 'react-native-gesture-handler';
 import React from 'react';
 import {View} from 'react-native';
-import { LoadingScreen } from './presentation/screens/LoadingScreen';
 import {styles} from './presentation/theme/app_theme';
+import {NavigationContainer} from '@react-navigation/native';
+import {Navigation} from './navigation/Navigation';
 
 export default function App() {
   return (
-    <View style={styles.background}>
-      <LoadingScreen/>
-    </View>
+    <NavigationContainer>
+      <Navigation />
+    </NavigationContainer>
   );
 }
-
-
