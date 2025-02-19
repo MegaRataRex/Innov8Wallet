@@ -1,31 +1,71 @@
 import React from 'react';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {colors, styles} from '../theme/app_theme';
-import Svg, {Defs, Pattern, Image, Rect, G} from 'react-native-svg';
-import LinesSVG from '../../assets/svgs/CrissCrossLines';
+import LinesSVG from '../../assets/svgs/ZigZagPattern';
 
-const {width, height} = Dimensions.get('window');
-
+const GRADIENT_COLORS = [colors.dark_red, colors.red , colors.red, colors.orange];
+const GRADIENT_LOCATIONS = [0,0.3,0.6,1,1];
+const GRADIENT_START = {x: 0, y: 0};
+const GRADIENT_END = {x: 1, y: 1};
+let timeout = undefined
 export const LoadingStartScreen = () => {
+
+  let[gradientOptions, setGradientOptions] = React.useState({
+    colors: GRADIENT_COLORS,
+    locations: GRADIENT_LOCATIONS,
+    start: GRADIENT_START,
+    end: GRADIENT_END,
+  });
+
+  const gradientOptionsRef = React.useRef(gradientOptions);
+  gradientOptionsRef.current = gradientOptions;
+
+  let reset = () => {
+    //Stop Animations
+    if(timeout != undefined){
+      clearTimeout(timeout);
+      timeout = undefined;
+    }
+    setGradientOptions({
+    colors: GRADIENT_COLORS,
+    locations: GRADIENT_LOCATIONS,
+    start: GRADIENT_START,
+    end: GRADIENT_END,
+    });
+  };
   return (
-    <View>
+    <View style={styles.container}>
       <LinearGradient
-        colors={[colors.dark_red, colors.red, colors.orange]}
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 1}}
-        style={StyleSheet.absoluteFillObject}
+        colors={gradientOptions.colors}
+        locations={gradientOptions.locations}
+        start={gradientOptions.start}
+        end={gradientOptions.end}
+        style={[StyleSheet.absoluteFillObject, styles.gradient]}
       />
-      <Pattern
-        id="LinesPattern"
-        patternUnits="userSpaceOnUse"
-        width="100"
-        height="100">
-        <G transform="scale(0.2)">
-          <LinesSVG />
-        </G>
-      </Pattern>
-      <Rect width="100%" height="100%" fill="url(#LinesPattern)" />
+
+{[...Array(10)].map((_, index) => (
+    <LinesSVG
+      key={index}
+      style={[
+        StyleSheet.absoluteFillObject,
+        { top: `${index * 10}%` }, // Adjust 50% to control overlap
+      ]}
+    />
+  ))}
+
+{[...Array(10)].map((_, index) => (
+  index === 0 ? null : ( // Skip the first element
+    <LinesSVG
+      key={index}
+      style={[
+        StyleSheet.absoluteFillObject,
+        { top: `${(index) * -10}%` }, // Adjust positioning
+      ]}
+    />
+  )
+))}
+
     </View>
   );
 };

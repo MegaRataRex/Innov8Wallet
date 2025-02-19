@@ -7,7 +7,7 @@ export function Navigation() {
   return (
     <Stack.Navigator
     screenOptions={{
-      headerShown: false
+      headerShown: false,
       }}>
       <Stack.Screen name="LoadingStart" component={LoadingStartScreen} />
     </Stack.Navigator>
