@@ -8,7 +8,7 @@ const GRADIENT_COLORS = [colors.dark_red, colors.red, colors.orange];
 const GRADIENT_LOCATIONS = [0, 0.3, 0.6, 1, 1];
 const GRADIENT_START = {x: 0, y: 0};
 const GRADIENT_END = {x: 1, y: 1};
-const MOVEMENT = GRADIENT_LOCATIONS[1] / 30;
+const MOVEMENT = GRADIENT_LOCATIONS[1] / 15;
 
 export const LoadingStartScreen = () => {
   const [gradientOptions, setGradientOptions] = useState({
