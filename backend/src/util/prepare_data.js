@@ -158,3 +158,6 @@ module.exports = prepareDataMonth;
 
     const previousMonthSpending = previousMonthSpent?.total_spent || 0
 */
+module.exports = {
+  prepareDataMonth,
+};
