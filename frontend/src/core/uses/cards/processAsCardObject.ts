@@ -1,5 +1,5 @@
-import {HttpAdapter} from '../../config/adapters/http_adapter';
-import {Card} from '../models/cardClass';
+import {HttpAdapter} from '../../../config/adapters/http_adapter';
+import {Card} from '../../models/cardClass';
 
 export const getUserCards = async (
   fetcher: HttpAdapter,

@@ -1,34 +1,31 @@
-import axios, { AxiosInstance } from 'axios';
-import { HttpAdapter } from './http_adapter';
+import axios, {AxiosInstance} from 'axios';
+import {HttpAdapter} from './http_adapter';
 
-interface Options{
-    baseUrl: string;
-    params: Record<string,string>;
+interface Options {
+  baseUrl: string;
+  params: Record<string, string>;
 }
 
-export class AxiosAdapter implements HttpAdapter{
+export class AxiosAdapter implements HttpAdapter {
+  private axiosInstance: AxiosInstance;
 
-    private axiosInstance: AxiosInstance;
+  constructor(options: Options) {
+    this.axiosInstance = axios.create({
+      baseURL: options.baseUrl,
+      params: options.params,
+    });
+  }
 
-    constructor(options: Options){
-        this.axiosInstance = axios.create({
-            baseURL: options.baseUrl,
-            params: options.params,
-        });
+  async get<T>(
+    url: string,
+    options?: Record<string, unknown> | undefined,
+  ): Promise<T> {
+    try {
+      const {data} = await this.axiosInstance.get(url, options);
+
+      return data;
+    } catch (error) {
+      throw new Error(`Error fetching get: ${url}`);
     }
-
-
-async get<T>(url: string, options?: Record<string, unknown> | undefined) : Promise<T>{
-
-    try{
-
-        const {data} = await this.axiosInstance.get(url, options);
-
-        return data;
-    }
-    catch(error){
-        throw new Error(`Erro fetching get: ${url}`);
-    }
-}
-
+  }
 }
