@@ -5,6 +5,7 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./presentation/*"]
-    }
+    },
+    "types": ["react-native"]
   }
 }
