@@ -134,3 +134,20 @@ exports.calculateSavings = (req, res) => {
     .status(400)
     .json({ error: "Faltan parámetros para realizar los cálculos." });
 };
+
+exports.getCards = (req, res) => {
+  const userId = req.params.userId;
+
+  const query =
+    "SELECT id, last_four, type, exp_date, cardType, brand FROM cards WHERE user_id = ?";
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error("Error en la consulta:", err);
+      res.status(500).json({ error: "Error interno del servidor" });
+      return;
+    }
+
+    res.json(results);
+  });
+};

@@ -7,6 +7,7 @@ const {
   getTransactions,
   getSubscriptions,
   calculateSavings,
+  getCards,
 } = require("../controllers/transactionsControllers");
 
 // 📌 Define la ruta de transacciones
@@ -20,5 +21,7 @@ router.get("/subscriptions", getSubscriptions);
 
 // 📌 Ruta para calcular ahorros
 router.post("/savings", calculateSavings);
+
+router.get("/cards/:userId", getCards);
 
 module.exports = router;
