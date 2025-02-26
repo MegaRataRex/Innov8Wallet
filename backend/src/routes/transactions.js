@@ -22,6 +22,8 @@ router.get("/subscriptions", getSubscriptions);
 // 📌 Ruta para calcular ahorros
 router.post("/savings", calculateSavings);
 
+router.post("/transfer");
+
 router.get("/cards/:userId", getCards);
 
 module.exports = router;

@@ -23,7 +23,7 @@ exports.addTransaction = async (req, res) => {
 
   res.json({ description, amount, category });
 
-  await db.query(
+  db.query(
     "INSERT INTO transactions (user_id, amount, category, type, description, sub_category, payment_method_id) VALUES (?, ?, ?, ?, ?, ? ,?)",
     [userId, amount, category, type, description, sub_category],
     (err, result) => {
@@ -42,7 +42,7 @@ exports.addTransaction = async (req, res) => {
 exports.getTransactions = async (req, res) => {
   const userId = req.user.userId;
 
-  await db.query(
+  db.query(
     "SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC",
     [userId],
     (err, results) => {
@@ -59,7 +59,7 @@ exports.getTransactions = async (req, res) => {
 exports.getSubscriptions = async (req, res) => {
   const userId = req.user.userId;
 
-  await db.query(
+  db.query(
     "SELECT * FROM transactions WHERE user_id = ? AND sub_category = 'Subscriptions' ORDER BY date DESC",
     [userId],
     (err, results) => {
@@ -141,7 +141,7 @@ exports.getCards = async (req, res) => {
   const query =
     "SELECT id, last_four, type, exp_date, cardType, brand FROM cards WHERE user_id = ?";
 
-  await db.query(query, [userId], (err, results) => {
+  db.query(query, [userId], (err, results) => {
     if (err) {
       console.error("Error en la consulta:", err);
       res.status(500).json({ error: "Error interno del servidor" });
@@ -150,4 +150,75 @@ exports.getCards = async (req, res) => {
 
     res.json(results);
   });
+
+  exports.transferFunds = async (req, res) => {
+    const { userId, fromAccountId, toAccountId, amount, description } =
+      req.body;
+
+    if (!userId || !fromAccountId || !toAccountId || !amount) {
+      return res.status(400).json({ error: "Todos los campos son requeridos" });
+    }
+
+    if (fromAccountId === toAccountId) {
+      return res
+        .status(400)
+        .json({ error: "No puedes transferir a la misma cuenta" });
+    }
+
+    try {
+      // Verificar saldo disponible en la cuenta origen
+      const [account] = await db.query(
+        "SELECT balance FROM accounts WHERE id = ? AND user_id = ?",
+        [fromAccountId, userId]
+      );
+      if (!account || account.balance < amount) {
+        return res.status(400).json({ error: "Saldo insuficiente" });
+      }
+
+      db.beginTransaction();
+
+      // Descontar saldo de la cuenta origen
+      db.query("UPDATE accounts SET balance = balance - ? WHERE id = ?", [
+        amount,
+        fromAccountId,
+      ]);
+
+      // Aumentar saldo en la cuenta destino
+      db.query("UPDATE accounts SET balance = balance + ? WHERE id = ?", [
+        amount,
+        toAccountId,
+      ]);
+
+      // Registrar transacción de débito
+      db.query(
+        "INSERT INTO transactions (user_id, amount, category, type, description, account_id) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          userId,
+          amount,
+          "Transfer",
+          "debit",
+          description || "Transferencia",
+          fromAccountId,
+        ]
+      );
+
+      // Registrar transacción de crédito
+      db.query(
+        "INSERT INTO transactions (user_id, amount, category, type, description, account_id) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          userId,
+          amount,
+          "Transfer",
+          "credit",
+          description || "Transferencia recibida",
+          toAccountId,
+        ]
+      );
+
+      res.status(201).json({ message: "Transferencia realizada con éxito" });
+    } catch (error) {
+      console.error("Error en la transferencia:", error);
+      res.status(500).json({ error: "Error procesando la transferencia" });
+    }
+  };
 };
