@@ -8,50 +8,46 @@ interface CustomBottomNavProps {
 export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.tabButton} 
+      <TouchableOpacity
+        style={styles.tabButton}
         onPress={() => onPress('Home')}
       >
-        <Image 
-          source={require('../assets/icons/home.png')} 
-          style={[styles.icon, styles.activeIcon]} 
+        <Image
+          source={require('../assets/icons/home.png')}
+          style={[styles.icon, styles.activeIcon]}
         />
       </TouchableOpacity>
-      
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.tabButton}
         onPress={() => onPress('Calendar')}
       >
-        <Image 
+        <Image
           source={require('../assets/icons/calendar.png')} 
           style={styles.icon} 
         />
       </TouchableOpacity>
-      
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.centerButton}
         onPress={() => onPress('Action')}
       >
         <View style={styles.centerButtonInner} />
       </TouchableOpacity>
-      
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.tabButton}
         onPress={() => onPress('Stats')}
       >
-        <Image 
-          source={require('../assets/icons/stats.png')} 
-          style={styles.icon} 
+        <Image
+          source={require('../assets/icons/stats.png')}
+          style={styles.icon}
         />
       </TouchableOpacity>
-      
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.tabButton}
         onPress={() => onPress('SMS')}
       >
-        <Image 
-          source={require('../assets/icons/sms.png')} 
-          style={styles.icon} 
+        <Image
+          source={require('../assets/icons/sms.png')}
+          style={styles.icon}
         />
       </TouchableOpacity>
     </View>
