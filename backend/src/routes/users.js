@@ -1,6 +1,7 @@
 const express = require("express");
 const CryptoJS = require("crypto-js");
-
+const bcrypt = require("bcrypt");
+const db = require("../config/db");
 const router = express.Router();
 
 const SECRET_KEY = process.env.SECRET_KEY || "clave_secreta_segura";
