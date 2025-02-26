@@ -1,21 +1,44 @@
 const express = require("express");
 const CryptoJS = require("crypto-js");
+const db = require("../config/db");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
 const SECRET_KEY = process.env.SECRET_KEY || "clave_secreta_segura";
 
 // 📌 Ruta para agregar una tarjeta
-router.post("/addCard", (req, res) => {
-  const { card, cvv } = req.body;
+router.post("/addCard", async (req, res) => {
+  const { userId, card, balance } = req.body;
+
+  if (!userId || !card) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  const balanceValue = balance || 0; // Fix balance default value
 
   try {
-    const decryptedBytes = CryptoJS.AES.decrypt(card, SECRET_KEY);
-    const decryptedCardNumber = decryptedBytes.toString(CryptoJS.enc.Utf8);
+    // 🔓 Decrypt the card first
+    const encryptedToken = CryptoJS.AES.encrypt(card, SECRET_KEY).toString();
 
-    res.json({ mensaje: "Tarjeta procesada correctamente" });
+    // 🏷️ Get last four digits
+    const lastFour = card.slice(-4);
+    // 📌 Insert into database
+    db.query(
+      "INSERT INTO cards (user_id, token, last_four, balance) VALUES (?, ?, ?, ?)",
+      [userId, encryptedToken, lastFour, balanceValue],
+      (err, result) => {
+        if (err) {
+          return res
+            .status(500)
+            .json({ error: "Database error", details: err });
+        }
+        res.json({ mensaje: "Tarjeta procesada correctamente" });
+      }
+    );
   } catch (error) {
-    res.status(400).json({ error: "Error al desencriptar la tarjeta" });
+    console.log(error);
+    res.status(400).json({ error: "Error al procesar la tarjeta" });
   }
 });
 
@@ -43,12 +66,10 @@ router.post("/register", async (req, res) => {
           [name, email, hashedPassword],
           (err, result) => {
             if (err) return res.status(500).json({ error: err.message });
-            res
-              .status(201)
-              .json({
-                message: "User registered successfully",
-                userId: result.insertId,
-              });
+            res.status(201).json({
+              message: "User registered successfully",
+              userId: result.insertId,
+            });
           }
         );
       }
