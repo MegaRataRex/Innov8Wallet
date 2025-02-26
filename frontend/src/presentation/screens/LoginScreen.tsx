@@ -9,25 +9,12 @@ import {
   TextInput,
 } from 'react-native';
 import ActionButtons from '../../components/ActionButton';
+import {styles} from '../theme/app_themes';
 
 const LoginScreen = () => {
-  // Logo icons array - assuming these exist in your assets
-  const logoIcons = [
-    require('../../assets/icons/logo-shape-1.png'),
-    require('../../assets/icons/logo-shape-2.png'),
-    require('../../assets/icons/logo-shape-3.png'),
-  ];
+  // Logo icons array - assuming these exist in your asset
 
-  // Bank name letters array - assuming these exist in your assets
-  const bankLetters = [
-    require('../../assets/icons/letter-b.png'),
-    require('../../assets/icons/letter-a.png'),
-    require('../../assets/icons/letter-n.png'),
-    require('../../assets/icons/letter-o.png'),
-    require('../../assets/icons/letter-r.png'),
-    require('../../assets/icons/letter-t.png'),
-    require('../../assets/icons/letter-e.png'),
-  ];
+  const logo = require('../../assets/icons/g24.png');
 
   // Handle button presses
   const handleInfoPress = () => {
@@ -61,77 +48,61 @@ const LoginScreen = () => {
       onPress: handleSupportPress,
     },
     {
-      icon: require('../../assets/icons/more-icon.png'),
+      icon: require('../../assets/icons/key-icon.png'),
       onPress: handleMorePress,
     },
   ];
 
   return (
-    <ImageBackground 
-      source={require('../../assets/images/building-background.png')}
-      style={styles.background}
-    >
-      <SafeAreaView style={styles.container}>
+    <ImageBackground
+      source={require('../../assets/images/building-background.jpg')}
+      style={localStyles.background}>
+      <SafeAreaView style={localStyles.container}>
         {/* Logo Section */}
-        <View style={styles.logoContainer}>
-          <View style={styles.logoShapes}>
-            {logoIcons.map((icon, index) => (
-              <Image 
-                key={`logo-${index}`}
-                source={icon}
-                style={styles.logoShape}
-              />
-            ))}
-          </View>
-          <View style={styles.bankName}>
-            {bankLetters.map((letter, index) => (
-              <Image
-                key={`letter-${index}`}
-                source={letter}
-                style={styles.bankLetter}
-              />
-            ))}
+        <View style={localStyles.logoContainer}>
+          <View style={localStyles.logoShapes}>
+            <Image source={logo} />
           </View>
         </View>
 
         {/* Welcome Section */}
-        <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeText}>HOLA SANTIAGO</Text>
-          <Text style={styles.subText}>
+        <View style={localStyles.welcomeSection}>
+          <Text style={localStyles.welcomeText}>HOLA SANTIAGO</Text>
+          <Text style={localStyles.subText}>
             Inicia sesion con tu correo y contraseña.
           </Text>
         </View>
 
         {/* Login Form Section */}
-        <View style={styles.formContainer}>
-          <View style={styles.inputContainer}>
+        <View style={localStyles.formContainer}>
+          <View style={localStyles.inputContainer}>
             <TextInput
-              style={styles.input}
+              style={localStyles.input}
               placeholder="Correo"
               placeholderTextColor="#666"
             />
             {/* You can add the Face ID icon here */}
           </View>
-          <Text style={styles.forgotPassword}>
+          <Text style={localStyles.forgotPassword}>
             Tengo problemas para iniciar sesion
           </Text>
         </View>
 
         {/* Action Buttons */}
-        <View style={styles.actionButtonsWrapper}>
+        <View style={localStyles.actionButtonsWrapper}>
           <ActionButtons buttons={actionButtonsConfig} />
         </View>
-        
+
         {/* Card Promotion Section */}
-        <View style={styles.cardPromoContainer}>
-          <Text style={styles.promoTitle}>DALE A TU NOMINA</Text>
-          <Text style={styles.promoText}>
-            Tarjeta banorte NOMINA, controla tus gastos directos con nuestra 
+        <View style={localStyles.cardPromoContainer}>
+          <Text style={localStyles.promoTitle}>DALE A TU NOMINA</Text>
+          <Text style={localStyles.promoText}>
+            Tarjeta banorte NOMINA, controla tus gastos directos con nuestra
             tarjeta especial para asalariados
           </Text>
-          <Image 
+          <Image
             source={require('../../assets/images/nomina-card.png')}
-            style={styles.cardImage}
+            style={localStyles.cardImage}
           />
         </View>
       </SafeAreaView>
@@ -139,9 +110,11 @@ const LoginScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
   background: {
     flex: 1,
+    backgroundColor: 'black',
+    opacity: 1,
   },
   container: {
     flex: 1,
