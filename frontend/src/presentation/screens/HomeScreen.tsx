@@ -4,12 +4,31 @@ import { styles } from '../theme/app_themes';
 import { Container } from '../../components/Container';
 import VisaCardSVG from '../../assets/svgs/VisaCardSVG';
 import { CustomBottomNav } from '../../components/CustomBottomNav';
+import { AdCard } from '../../components/AdCard';
 
 export const HomeScreen = () => {
   const handleNavPress = (screenName: string) => {
     // Handle navigation or actions here
     console.log(`Navigating to ${screenName}`);
   };
+
+  const ads = [
+    {
+      image: require('../../assets/images/ad-nomina.jpg'),
+      title: 'Tu Nómina es más fuerte con Banorte',
+      description: 'Cambia tu Nómina a Banorte desde tu celular, en menos de 5 minutos de cotización y conoce todos los beneficios que obtienes al ser parte de nuestra comunidad de clientes exclusivos.',
+    },
+    {
+      image: require('../../assets/images/ad-hipotecario.jpg'),
+      title: 'TRANSFIERE TU CRÉDITO HIPOTECARIO A BANORTE',
+      description: 'te otorgamos un monto adicional para que uses como más te convenga. Mejor aún, disfruta de una Liquidez en transferir a Banorte el crédito hipotecario que tienes en otro Banco.',
+    },
+    {
+      image: require('../../assets/images/ad-salud.png'),
+      title: 'PIEZA FUNDAMENTAL EN LA SALUD Y BIENESTAR PARA TU CUERPO',
+      description: 'Su desarrollo y mantenimiento ayudan en la salud metabólica, mental, ósea y en el desempeño físico. Haz hancia para más información y conoce más al respecto.',
+    },
+  ];
 
   return (
     <View style={styles.background}>
@@ -63,6 +82,24 @@ export const HomeScreen = () => {
               <Image source={require('../../assets/icons/more.png')} style={localStyles.actionIcon} />
               <Text style={localStyles.actionText}>Más</Text>
             </TouchableOpacity>
+          </View>
+          <View style={localStyles.adsSection}>
+            <Text style={localStyles.sectionTitle}>Promociones</Text>
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={localStyles.adsScrollContent}
+              >
+                {ads.map((ad, index) => (
+                  <AdCard
+                    key={index}
+                    image={ad.image}
+                    title={ad.title}
+                    description={ad.description}
+                    onPress={() => console.log(`Ad ${index + 1} clicked`)}
+                  />
+                ))}
+              </ScrollView>
           </View>
         </Container>
       </ScrollView>
@@ -170,5 +207,12 @@ const localStyles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     color: '#333',
+  },
+  adsSection: {
+    marginTop: 32,
+  },
+  adsScrollContent: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
 });
