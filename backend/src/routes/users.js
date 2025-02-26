@@ -1,5 +1,8 @@
 const express = require("express");
 const CryptoJS = require("crypto-js");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const db = require("../config/db");
 
 const router = express.Router();
 
@@ -43,17 +46,16 @@ router.post("/register", async (req, res) => {
           [name, email, hashedPassword],
           (err, result) => {
             if (err) return res.status(500).json({ error: err.message });
-            res
-              .status(201)
-              .json({
-                message: "User registered successfully",
-                userId: result.insertId,
-              });
+            res.status(201).json({
+              message: "User registered successfully",
+              userId: result.userId,
+            });
           }
         );
       }
     );
   } catch (error) {
+    console.error("🚨 Error en el servidor:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
