@@ -8,7 +8,7 @@ const SECRET_KEY = process.env.SECRET_KEY || "clave_secreta_segura";
 
 // 📌 Ruta para agregar una tarjeta
 router.post("/addCard", async (req, res) => {
-  const { userId, card, balance } = req.body;
+  const { userId, card, balance, cardType } = req.body;
 
   if (!userId || !card) {
     return res.status(400).json({ error: "All fields are required" });
@@ -24,8 +24,8 @@ router.post("/addCard", async (req, res) => {
     const lastFour = card.slice(-4);
     // 📌 Insert into database
     db.query(
-      "INSERT INTO cards (user_id, token, last_four, balance) VALUES (?, ?, ?, ?)",
-      [userId, encryptedToken, lastFour, balanceValue],
+      "INSERT INTO cards (user_id, token, last_four, balance) VALUES (?, ?, ?, ?, ?)",
+      [userId, encryptedToken, lastFour, balanceValue, cardType],
       (err, result) => {
         if (err) {
           return res
