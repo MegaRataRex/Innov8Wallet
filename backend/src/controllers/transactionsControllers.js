@@ -1,8 +1,9 @@
 const db = require("../config/db");
 const { categorizeSpending, subCategorize } = require("./categorize");
 
-exports.addTransaction = (req, res) => {
+exports.addTransaction = async (req, res) => {
   const {
+    userId,
     amount,
     category,
     type,
@@ -10,7 +11,6 @@ exports.addTransaction = (req, res) => {
     sub_category,
     payment_method_id,
   } = req.body;
-  const userId = req.user.userId;
 
   if (!amount || !type || !payment_method_id) {
     return res.status(400).json({ error: "Todos los campos son requeridos" });
@@ -23,7 +23,7 @@ exports.addTransaction = (req, res) => {
 
   res.json({ description, amount, category });
 
-  db.query(
+  await db.query(
     "INSERT INTO transactions (user_id, amount, category, type, description, sub_category, payment_method_id) VALUES (?, ?, ?, ?, ?, ? ,?)",
     [userId, amount, category, type, description, sub_category],
     (err, result) => {
@@ -39,10 +39,10 @@ exports.addTransaction = (req, res) => {
   );
 };
 
-exports.getTransactions = (req, res) => {
+exports.getTransactions = async (req, res) => {
   const userId = req.user.userId;
 
-  db.query(
+  await db.query(
     "SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC",
     [userId],
     (err, results) => {
@@ -56,10 +56,10 @@ exports.getTransactions = (req, res) => {
 };
 
 // Controlador para obtener suscripciones
-exports.getSubscriptions = (req, res) => {
+exports.getSubscriptions = async (req, res) => {
   const userId = req.user.userId;
 
-  db.query(
+  await db.query(
     "SELECT * FROM transactions WHERE user_id = ? AND sub_category = 'Subscriptions' ORDER BY date DESC",
     [userId],
     (err, results) => {
@@ -135,13 +135,13 @@ exports.calculateSavings = (req, res) => {
     .json({ error: "Faltan parámetros para realizar los cálculos." });
 };
 
-exports.getCards = (req, res) => {
+exports.getCards = async (req, res) => {
   const userId = req.params.userId;
 
   const query =
     "SELECT id, last_four, type, exp_date, cardType, brand FROM cards WHERE user_id = ?";
 
-  db.query(query, [userId], (err, results) => {
+  await db.query(query, [userId], (err, results) => {
     if (err) {
       console.error("Error en la consulta:", err);
       res.status(500).json({ error: "Error interno del servidor" });

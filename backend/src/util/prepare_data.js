@@ -30,7 +30,7 @@ async function prepareDataMonth(userId, category, paymentId) {
     ${stringSuffix} 
     GROUP BY YEAR(date), MONTH(date), DAY(date), WEEKDAY(date)
     ORDER BY date DESC`;
-    const [historicalTransactions] = await db.query(queryString, params);
+    const [historicalTransactions] = db.query(queryString, params);
 
     const sortedData = historicalTransactions.sort(
       (a, b) => a.amount - b.amount
