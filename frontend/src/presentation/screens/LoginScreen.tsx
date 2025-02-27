@@ -55,7 +55,7 @@ const LoginScreen = () => {
 
   return (
     <ImageBackground
-      source={require('../../assets/images/building-background.png')}
+      source={require('../../assets/images/building-background.jpg')}
       style={styles.background}>
       <SafeAreaView style={styles.container}>
         {/* Logo Section */}

@@ -22,8 +22,8 @@ export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => 
         onPress={() => onPress('Calendar')}
       >
         <Image
-          source={require('../assets/icons/calendar.png')} 
-          style={styles.icon} 
+          source={require('../assets/icons/calendar.png')}
+          style={styles.icon}
         />
       </TouchableOpacity>
       <TouchableOpacity

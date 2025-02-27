@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import {styles, colors} from '../theme/app_themes';
+import {styles} from '../theme/app_themes';
 import {Container} from '../../components/Container';
 import VisaCardSVG from '../../assets/svgs/VisaCardSVG';
 import {CustomBottomNav} from '../../components/CustomBottomNav';
