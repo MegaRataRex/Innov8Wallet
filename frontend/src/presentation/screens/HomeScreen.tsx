@@ -14,8 +14,13 @@ import {CustomBottomNav} from '../../components/CustomBottomNav';
 import {AdCard} from '../../components/AdCard';
 import Shimmer from '../effects/shimmer';
 import {Shield} from 'lucide-react-native';
+import { useCards } from '../../hooks/useCards';
 
 export const HomeScreen = () => {
+    
+  const getUserCards = useCards();
+
+
   const handleNavPress = (screenName: string) => {
     // Handle navigation or actions here
     console.log(`Navigating to ${screenName}`);

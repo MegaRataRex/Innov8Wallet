@@ -2,15 +2,16 @@ const express = require("express");
 const CryptoJS = require("crypto-js");
 const bcrypt = require("bcrypt");
 const db = require("../config/db");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 const SECRET_KEY = process.env.SECRET_KEY || "clave_secreta_segura";
 
 // 📌 Ruta para agregar una tarjeta
-router.post("/addCard", async (req, res) => {
-  const { userId, card, balance, cardType } = req.body;
+router.post("/addCard", (req, res) => {
+  const { userId, card, balance, cardType, brand } = req.body;
 
-  if (!userId || !card) {
+  if (!userId || !card || !brand) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -24,8 +25,8 @@ router.post("/addCard", async (req, res) => {
     const lastFour = card.slice(-4);
     // 📌 Insert into database
     db.query(
-      "INSERT INTO cards (user_id, token, last_four, balance) VALUES (?, ?, ?, ?, ?)",
-      [userId, encryptedToken, lastFour, balanceValue, cardType],
+      "INSERT INTO cards (user_id, token, last_four, balance, cardType, brand) VALUES (?, ?, ?, ?, ?, ?)",
+      [userId, encryptedToken, lastFour, balanceValue, cardType, brand],
       (err, result) => {
         if (err) {
           return res
@@ -41,7 +42,7 @@ router.post("/addCard", async (req, res) => {
   }
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password)
@@ -80,7 +81,7 @@ router.post("/register", async (req, res) => {
 });
 
 // LOGIN a user
-router.post("/login", async (req, res) => {
+router.post("/login", (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password)

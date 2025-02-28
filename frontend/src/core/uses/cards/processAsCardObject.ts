@@ -6,7 +6,7 @@ export const getUserCards = async (
   userId: string,
 ): Promise<Card[]> => {
   try {
-    const cards = await fetcher.get(
+    const cards = await fetcher.get<>(
       `https://continual-rhino-451822-t8.uw.r.appspot.com/cards/${userId}`,
     );
 

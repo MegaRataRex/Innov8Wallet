@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import {HttpAdapter} from './http_adapter';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Options {
   baseUrl: string;
@@ -14,7 +15,16 @@ export class AxiosAdapter implements HttpAdapter {
       baseURL: options.baseUrl,
       params: options.params,
     });
+
+    this.axiosInstance.interceptors.request.use(async (config) => {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    });
   }
+
 
   async get<T>(
     url: string,
@@ -26,6 +36,16 @@ export class AxiosAdapter implements HttpAdapter {
       return data;
     } catch (error) {
       throw new Error(`Error fetching get: ${url}`);
+    }
+  }
+
+
+  async post<T>(url: string, body: Record<string, unknown>): Promise<T> {
+    try {
+      const { data } = await this.axiosInstance.post(url, body);
+      return data;
+    } catch (error) {
+      throw new Error(`Error fetching post: ${url}`);
     }
   }
 }

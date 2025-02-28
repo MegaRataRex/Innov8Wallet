@@ -1,5 +1,6 @@
 const db = require("../config/db");
 const { categorizeSpending, subCategorize } = require("./categorize");
+const jwt = require("jsonwebtoken");
 
 exports.addTransaction = async (req, res) => {
   const {
@@ -136,89 +137,109 @@ exports.calculateSavings = (req, res) => {
 };
 
 exports.getCards = async (req, res) => {
-  const userId = req.params.userId;
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  console.log("Received token:", token); // Debugging
 
-  const query =
-    "SELECT id, last_four, type, exp_date, cardType, brand FROM cards WHERE user_id = ?";
+  if (!token) {
+    return res.status(401).json({ error: "Access denied. No token provided." });
+  }
 
-  db.query(query, [userId], (err, results) => {
-    if (err) {
-      console.error("Error en la consulta:", err);
-      res.status(500).json({ error: "Error interno del servidor" });
-      return;
+  try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded token:", decoded); // Debugging
+
+    const authenticatedUserId = decoded.userId;
+    const requestedUserId = req.params.userId;
+
+    // Ensure the user is only accessing their own cards
+    if (parseInt(authenticatedUserId) !== parseInt(requestedUserId)) {
+      return res.status(403).json({ error: "Unauthorized access." });
     }
 
-    res.json(results);
-  });
-
-  exports.transferFunds = async (req, res) => {
-    const { userId, fromAccountId, toAccountId, amount, description } =
-      req.body;
-
-    if (!userId || !fromAccountId || !toAccountId || !amount) {
-      return res.status(400).json({ error: "Todos los campos son requeridos" });
-    }
-
-    if (fromAccountId === toAccountId) {
-      return res
-        .status(400)
-        .json({ error: "No puedes transferir a la misma cuenta" });
-    }
-
-    try {
-      // Verificar saldo disponible en la cuenta origen
-      const [account] = await db.query(
-        "SELECT balance FROM accounts WHERE id = ? AND user_id = ?",
-        [fromAccountId, userId]
-      );
-      if (!account || account.balance < amount) {
-        return res.status(400).json({ error: "Saldo insuficiente" });
+    // Query to fetch the user's cards
+    const query =
+      "SELECT id, last_four, type, exp_date, cardType, brand FROM cards WHERE user_id = ?";
+    db.query(query, [requestedUserId], (err, results) => {
+      if (err) {
+        console.error("Error in query:", err);
+        return res.status(500).json({ error: "Internal server error" });
       }
 
-      db.beginTransaction();
+      res.json(results);
+    });
+  } catch (error) {
+    console.error("JWT Verification Error:", error); // Debugging
+    return res.status(401).json({ error: "Invalid or expired token." });
+  }
+};
 
-      // Descontar saldo de la cuenta origen
-      db.query("UPDATE accounts SET balance = balance - ? WHERE id = ?", [
-        amount,
-        fromAccountId,
-      ]);
+exports.transferFunds = async (req, res) => {
+  const { userId, fromAccountId, toAccountId, amount, description } = req.body;
 
-      // Aumentar saldo en la cuenta destino
-      db.query("UPDATE accounts SET balance = balance + ? WHERE id = ?", [
-        amount,
-        toAccountId,
-      ]);
+  if (!userId || !fromAccountId || !toAccountId || !amount) {
+    return res.status(400).json({ error: "Todos los campos son requeridos" });
+  }
 
-      // Registrar transacción de débito
-      db.query(
-        "INSERT INTO transactions (user_id, amount, category, type, description, account_id) VALUES (?, ?, ?, ?, ?, ?)",
-        [
-          userId,
-          amount,
-          "Transfer",
-          "debit",
-          description || "Transferencia",
-          fromAccountId,
-        ]
-      );
+  if (fromAccountId === toAccountId) {
+    return res
+      .status(400)
+      .json({ error: "No puedes transferir a la misma cuenta" });
+  }
 
-      // Registrar transacción de crédito
-      db.query(
-        "INSERT INTO transactions (user_id, amount, category, type, description, account_id) VALUES (?, ?, ?, ?, ?, ?)",
-        [
-          userId,
-          amount,
-          "Transfer",
-          "credit",
-          description || "Transferencia recibida",
-          toAccountId,
-        ]
-      );
-
-      res.status(201).json({ message: "Transferencia realizada con éxito" });
-    } catch (error) {
-      console.error("Error en la transferencia:", error);
-      res.status(500).json({ error: "Error procesando la transferencia" });
+  try {
+    // Verificar saldo disponible en la cuenta origen
+    const [account] = await db.query(
+      "SELECT balance FROM accounts WHERE id = ? AND user_id = ?",
+      [fromAccountId, userId]
+    );
+    if (!account || account.balance < amount) {
+      return res.status(400).json({ error: "Saldo insuficiente" });
     }
-  };
+
+    db.beginTransaction();
+
+    // Descontar saldo de la cuenta origen
+    db.query("UPDATE accounts SET balance = balance - ? WHERE id = ?", [
+      amount,
+      fromAccountId,
+    ]);
+
+    // Aumentar saldo en la cuenta destino
+    db.query("UPDATE accounts SET balance = balance + ? WHERE id = ?", [
+      amount,
+      toAccountId,
+    ]);
+
+    // Registrar transacción de débito
+    db.query(
+      "INSERT INTO transactions (user_id, amount, category, type, description, account_id) VALUES (?, ?, ?, ?, ?, ?)",
+      [
+        userId,
+        amount,
+        "Transfer",
+        "debit",
+        description || "Transferencia",
+        fromAccountId,
+      ]
+    );
+
+    // Registrar transacción de crédito
+    db.query(
+      "INSERT INTO transactions (user_id, amount, category, type, description, account_id) VALUES (?, ?, ?, ?, ?, ?)",
+      [
+        userId,
+        amount,
+        "Transfer",
+        "credit",
+        description || "Transferencia recibida",
+        toAccountId,
+      ]
+    );
+
+    res.status(201).json({ message: "Transferencia realizada con éxito" });
+  } catch (error) {
+    console.error("Error en la transferencia:", error);
+    res.status(500).json({ error: "Error procesando la transferencia" });
+  }
 };
