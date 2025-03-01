@@ -7,10 +7,11 @@ import WomanCardSVG from '../assets/svgs/WomanCardSVG';
 interface CardProps{
   cardType : string,
   lastFour: string,
-  type: string,
 }
 
-export const CardComponent: React.FC<CardProps> = ({cardType,lastFour}) => {
+export const CardComponent: React.FC<CardProps> = ({cardType, lastFour}) => {
+  // Component code...
+
 
   const renderCardType = () => {
     switch (cardType) {

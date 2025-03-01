@@ -7,7 +7,6 @@ import {
   Image,
   SafeAreaView,
   TextInput,
-  Alert,
   TouchableOpacity,
 } from 'react-native';
 import ActionButtons from '../../components/ActionButton';
@@ -75,13 +74,10 @@ const LoginScreen = () => {
 
       if (response.token) {
         AsyncStorage.setItem('token', response.token);
-        Alert.alert('Login Success', 'You are now logged in.');
         // Navigate to the next screen if necessary
       } else {
-        Alert.alert('Login Failed', 'Invalid credentials.');
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to login. Please try again.');
     }
   };
 
@@ -99,20 +95,31 @@ const LoginScreen = () => {
 
         {/* Welcome Section */}
         <View style={localStyles.welcomeSection}>
-          <Text style={localStyles.welcomeText}>HOLA SANTIAGO</Text>
-          {isEmailInput ? 'Ingresa tu correo' : 'Password'}
+          <Text style={localStyles.welcomeText}>HOLA USUARIO</Text>
+          <Text>{isEmailInput ? 'Ingresa tu correo' : 'Password'}</Text>
         </View>
 
         {/* Login Form Section */}
         <View style={localStyles.formContainer}>
-          <View style={localStyles.inputContainer}>
-            <TextInput
+          <View style={localStyles.inputRow}>
+          <TextInput
               style={localStyles.input}
               placeholder={isEmailInput ? 'Correo' : 'Contraseña'}
               value={isEmailInput ? email : password}
+              onChangeText={(text) => (isEmailInput ? setEmail(text) : setPassword(text))}
               placeholderTextColor="#666"
+              autoCorrect={false}
             />
-                  </View>
+            <TouchableOpacity style={localStyles.loginButton}  onPress={() => {
+            if (isEmailInput) {
+              setIsEmailInput(false);  // Switch to password input
+            } else {
+            handleLogin();  // Call login function
+            }
+            }}>
+              <Text style={localStyles.loginButtonText}>Login</Text>
+            </TouchableOpacity>
+            </View>
           <Text style={localStyles.forgotPassword}>
             Tengo problemas para iniciar sesion
           </Text>
@@ -231,6 +238,27 @@ const localStyles = StyleSheet.create({
     width: '100%',
     height: 120,
     resizeMode: 'contain',
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    height: 50,
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+  },
+
+  loginButton: {
+    backgroundColor: '#E31837',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    marginLeft: 10,
+  },
+  loginButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

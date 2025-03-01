@@ -14,31 +14,31 @@ const getUserId = async () => {
   }
 };
 
-const userId = await getUserId();
 
 export const useCards = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userCards, setUserCards] = useState<Card[]>([]);
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
-  initialLoad();
-
+    // Get user ID and then load cards
+    const loadData = async () => {
+      const id = await getUserId();
+      setUserId(id);
+      initialLoad(id);
+    };
+    loadData();
   }, []);
 
-  const initialLoad = async () => {
-    const userCardsPromise = UseCases.getUserCards(ApiFetcher,userId);
-
-   const [
-      userAllCards,
-    ] = await Promise.all([
-      userCardsPromise,
-    ]);
+  const initialLoad = async (id: string) => {
+    const userCardsPromise = UseCases.getUserCards(ApiFetcher, id);
+    const [userAllCards] = await Promise.all([userCardsPromise]);
 
     setUserCards(userAllCards);
     setIsLoading(false);
   };
 
-  return{
+  return {
     isLoading,
     userCards,
   };

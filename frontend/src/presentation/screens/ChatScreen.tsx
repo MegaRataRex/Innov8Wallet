@@ -74,13 +74,13 @@ export const ChatScreen = () => {
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}>
-            <Image source={require('../assets/icons/arrow-left-icon.png')} style={styles.icon} />
+            <Image source={require('../../assets/icons/arrow-left-icon.png')} style={styles.icon} />
           </TouchableOpacity>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Maya convergency</Text>
           </View>
           <TouchableOpacity style={styles.profileButton}>
-            <Image source={require('../assets/icons/user-icon.png')} style={styles.icon} />
+            <Image source={require('../../assets/icons/user-icon.png')} style={styles.icon} />
           </TouchableOpacity>
         </View>
 
