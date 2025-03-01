@@ -7,6 +7,11 @@ const router = express.Router();
 
 const SECRET_KEY = process.env.SECRET_KEY || "clave_secreta_segura";
 
+function getRandomCardType() {
+  const cardTypes = ["debit", "credit"];
+  return cardTypes[Math.floor(Math.random() * cardTypes.length)];
+}
+
 // 📌 Ruta para agregar una tarjeta
 router.post("/addCard", (req, res) => {
   const { userId, card, balance, cardType, brand } = req.body;
@@ -18,6 +23,13 @@ router.post("/addCard", (req, res) => {
   const balanceValue = balance || 0; // Fix balance default value
 
   try {
+    const type = getRandomCardType();
+
+    const fourYearsFromNow = new Date();
+    fourYearsFromNow.setFullYear(fourYearsFromNow.getFullYear() + 4);
+
+    const query = `INSERT INTO cards (user_id, token, last_four, type, exp_date, cardType, brand, balance)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     // 🔓 Decrypt the card first
     const encryptedToken = CryptoJS.AES.encrypt(card, SECRET_KEY).toString();
 
@@ -25,8 +37,17 @@ router.post("/addCard", (req, res) => {
     const lastFour = card.slice(-4);
     // 📌 Insert into database
     db.query(
-      "INSERT INTO cards (user_id, token, last_four, balance, cardType, brand) VALUES (?, ?, ?, ?, ?, ?)",
-      [userId, encryptedToken, lastFour, balanceValue, cardType, brand],
+      query,
+      [
+        userId,
+        encryptedToken,
+        lastFour,
+        type,
+        fourYearsFromNow.toISOString().split("T")[0],
+        cardType,
+        brand,
+        balanceValue,
+      ],
       (err, result) => {
         if (err) {
           return res
