@@ -1,5 +1,4 @@
 import {StyleSheet} from 'react-native';
-import LoginScreen from '../screens/LoginScreen';
 
 export const colors = {
   red: '#e30027',

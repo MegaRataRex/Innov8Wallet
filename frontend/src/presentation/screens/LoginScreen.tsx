@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,24 @@ import {
   Image,
   SafeAreaView,
   TextInput,
+  Alert,
+  TouchableOpacity,
 } from 'react-native';
 import ActionButtons from '../../components/ActionButton';
 import {styles} from '../theme/app_themes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ApiFetcher } from '../../config/adapters/api_fetcher';
 
 const LoginScreen = () => {
+
+  interface LoginResponse {
+    token: string;
+    userId: number;
+  }
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isEmailInput, setIsEmailInput] = useState(true);
   // Logo icons array - assuming these exist in your asset
 
   const logo = require('../../assets/icons/g24.png');
@@ -53,6 +66,25 @@ const LoginScreen = () => {
     },
   ];
 
+  const handleLogin = async () => {
+    try {
+      const response: LoginResponse = await ApiFetcher.post('/users/login', {
+        email,
+        password,
+      });
+
+      if (response.token) {
+        AsyncStorage.setItem('token', response.token);
+        Alert.alert('Login Success', 'You are now logged in.');
+        // Navigate to the next screen if necessary
+      } else {
+        Alert.alert('Login Failed', 'Invalid credentials.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to login. Please try again.');
+    }
+  };
+
   return (
     <ImageBackground
       source={require('../../assets/images/building-background.jpg')}
@@ -68,9 +100,7 @@ const LoginScreen = () => {
         {/* Welcome Section */}
         <View style={localStyles.welcomeSection}>
           <Text style={localStyles.welcomeText}>HOLA SANTIAGO</Text>
-          <Text style={localStyles.subText}>
-            Inicia sesion con tu correo y contraseña.
-          </Text>
+          {isEmailInput ? 'Ingresa tu correo' : 'Password'}
         </View>
 
         {/* Login Form Section */}
@@ -78,11 +108,11 @@ const LoginScreen = () => {
           <View style={localStyles.inputContainer}>
             <TextInput
               style={localStyles.input}
-              placeholder="Correo"
+              placeholder={isEmailInput ? 'Correo' : 'Contraseña'}
+              value={isEmailInput ? email : password}
               placeholderTextColor="#666"
             />
-            {/* You can add the Face ID icon here */}
-          </View>
+                  </View>
           <Text style={localStyles.forgotPassword}>
             Tengo problemas para iniciar sesion
           </Text>

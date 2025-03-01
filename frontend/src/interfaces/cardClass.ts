@@ -7,4 +7,4 @@ export interface Card {
   exp_date: Date;
   card_type: string;
   brand: string;
-}
+};
