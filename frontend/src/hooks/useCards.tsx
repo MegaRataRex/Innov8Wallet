@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {Card} from '../core/models/cardClass';
+import {Card} from '../interfaces/cardClass';
 import * as UseCases from '../core/uses';
 import { ApiFetcher } from '../config/adapters/api_fetcher';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,6 +26,20 @@ export const useCards = () => {
   }, []);
 
   const initialLoad = async () => {
-    const userCards = UseCases.getUserCards(ApiFetcher,userId);
+    const userCardsPromise = UseCases.getUserCards(ApiFetcher,userId);
+
+   const [
+      userAllCards,
+    ] = await Promise.all([
+      userCardsPromise,
+    ]);
+
+    setUserCards(userAllCards);
+    setIsLoading(false);
+  };
+
+  return{
+    isLoading,
+    userCards,
   };
 };

@@ -9,16 +9,16 @@ import {
 } from 'react-native';
 import {styles} from '../theme/app_themes';
 import {Container} from '../../components/Container';
-import VisaCardSVG from '../../assets/svgs/VisaCardSVG';
 import {CustomBottomNav} from '../../components/CustomBottomNav';
 import {AdCard} from '../../components/AdCard';
 import Shimmer from '../effects/shimmer';
-import {Shield} from 'lucide-react-native';
+
 import { useCards } from '../../hooks/useCards';
+import { CardComponent } from '../../components/CardComponent';
 
 export const HomeScreen = () => {
-    
-  const getUserCards = useCards();
+
+  const {isLoading, userCards} = useCards();
 
 
   const handleNavPress = (screenName: string) => {
@@ -71,7 +71,14 @@ export const HomeScreen = () => {
           <Text style={[localStyles.sectionTitle, styles.text]}>Cuentas</Text>
 
           <View style={localStyles.cardContainer}>
-            <VisaCardSVG />
+          {isLoading ? (
+            <Shimmer/>
+          ) : userCards.length > 0 ? (
+          <CardComponent cardType={userCards[0].card_type} lastFour={userCards[0].last_four} type={userCards[0].type}/>
+          ) : (
+          <Text style={styles.text}>No cards available</Text>
+          )}
+
           </View>
 
           <View style={localStyles.accountInfo}>

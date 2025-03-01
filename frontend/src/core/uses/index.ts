@@ -1,1 +1,1 @@
-export * from './cards/processAsCardObject';
+export * from './cards/CardsUseCase';
