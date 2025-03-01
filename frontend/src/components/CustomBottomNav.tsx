@@ -1,11 +1,24 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 
 interface CustomBottomNavProps {
   onPress: (screenName: string) => void;
 }
 
+type RootStackParamList = {
+  Home: undefined;
+  Chat: undefined;
+  // Add other screen names and their params here
+};
+
 export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const handleChatPress = () => {
+    navigation.navigate('Chat');
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -26,11 +39,12 @@ export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => 
           style={styles.icon}
         />
       </TouchableOpacity>
+      {/* Middle button */}
       <TouchableOpacity
-        style={styles.centerButton}
-        onPress={() => onPress('Action')}
+        onPress={handleChatPress}
+        style={styles.middleButton}
       >
-        <View style={styles.centerButtonInner} />
+        <Image source={require('../assets/icons/chat-icon.png')} style={styles.icon} />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.tabButton}
@@ -75,30 +89,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: '100%',
   },
-  icon: {
-    width: 24,
-    height: 24,
-    tintColor: '#666666',
-  },
   activeIcon: {
     tintColor: '#EA0A2A',
   },
-  centerButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#EA0A2A',
+  middleButton: {
+    backgroundColor: '#E31837', // Banorte red color
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -20, // Lift it up slightly
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    tintColor: '#E31837', // Banorte red color
   },
   centerButtonInner: {
     width: 56,
