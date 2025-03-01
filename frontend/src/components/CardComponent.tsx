@@ -28,7 +28,7 @@ export const CardComponent: React.FC<CardProps> = ({cardType, lastFour}) => {
     return (
         <View style={styles.cardWrapper}>
           {renderCardType()}
-          <Text style={styles.cardNumber}>**** {lastFour}</Text>
+          <Text style={styles.cardNumber}> **** {lastFour}</Text>
         </View>
     );
   };
@@ -42,8 +42,7 @@ export const CardComponent: React.FC<CardProps> = ({cardType, lastFour}) => {
       left: 15, // Positioning at the left
       fontSize: 18,
       fontWeight: 'bold',
-      color: '#fff', // Assuming a dark background, adjust as needed
-      backgroundColor: 'rgba(0, 0, 0, 0.3)', // Slight transparency for visibility
+      color: '#fff', // Assuming a dark background, adjust as needed, // Slight transparency for visibility
       paddingHorizontal: 8,
       paddingVertical: 4,
       borderRadius: 5,

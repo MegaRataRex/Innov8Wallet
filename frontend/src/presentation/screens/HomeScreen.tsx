@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,10 +15,32 @@ import Shimmer from '../effects/shimmer';
 
 import { useCards } from '../../hooks/useCards';
 import { CardComponent } from '../../components/CardComponent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const HomeScreen = () => {
 
+  const [name, setName] = useState('');
   const {isLoading, userCards} = useCards();
+  const[isLoadingName, setIsLoadingName] = useState(true);
+
+
+  useEffect(() => {
+    const fetchName = async () => {
+      try {
+        const storedName = await AsyncStorage.getItem('name');
+        if (storedName) {
+          setName(storedName);
+        }
+      } catch (error) {
+        console.error('Error fetching name:', error);
+      } finally {
+        setIsLoadingName(false);
+      }
+    };
+
+    fetchName();
+  }, [setIsLoadingName]);
 
 
   const handleNavPress = (screenName: string) => {
@@ -48,7 +70,7 @@ export const HomeScreen = () => {
   ];
 
   return (
-    <View style={styles.background}>
+    <SafeAreaView style={styles.background}>
       <ScrollView contentContainerStyle={localStyles.scrollContent}>
         <Container>
           <View style={localStyles.header}>
@@ -57,7 +79,12 @@ export const HomeScreen = () => {
                 <Text style={localStyles.avatarText}>S</Text>
               </View>
               <Text style={[localStyles.welcomeText]}>
-                BIENVENIDO, <Text style={localStyles.nameText}>SERGIO</Text>.
+                BIENVENID@, {
+                  isLoadingName ? (
+                    <Shimmer/>
+                  ) : (<Text style={localStyles.nameText}>
+                   {name}
+                  </Text>)}
               </Text>
             </View>
             <TouchableOpacity style={localStyles.notificationButton}>
@@ -74,7 +101,7 @@ export const HomeScreen = () => {
           {isLoading ? (
             <Shimmer/>
           ) : userCards.length > 0 ? (
-          <CardComponent cardType={userCards[0].card_type} lastFour={userCards[0].last_four} type={userCards[0].type}/>
+          <CardComponent cardType={userCards[0].cardType} lastFour={userCards[0].last_four}/>
           ) : (
           <Text style={styles.text}>No cards available</Text>
           )}
@@ -157,7 +184,7 @@ export const HomeScreen = () => {
         </View>
       </ScrollView>
       <CustomBottomNav onPress={handleNavPress} />
-    </View>
+    </SafeAreaView>
   );
 };
 

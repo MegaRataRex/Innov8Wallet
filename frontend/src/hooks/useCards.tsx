@@ -18,13 +18,11 @@ const getUserId = async () => {
 export const useCards = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userCards, setUserCards] = useState<Card[]>([]);
-  const [userId, setUserId] = useState('');
 
   useEffect(() => {
     // Get user ID and then load cards
     const loadData = async () => {
       const id = await getUserId();
-      setUserId(id);
       initialLoad(id);
     };
     loadData();
@@ -33,7 +31,7 @@ export const useCards = () => {
   const initialLoad = async (id: string) => {
     const userCardsPromise = UseCases.getUserCards(ApiFetcher, id);
     const [userAllCards] = await Promise.all([userCardsPromise]);
-
+    console.log(userAllCards);
     setUserCards(userAllCards);
     setIsLoading(false);
   };

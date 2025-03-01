@@ -5,6 +5,6 @@ export interface Card {
   last_four: string;
   type: string;
   exp_date: Date;
-  card_type: string;
+  cardType: string;
   brand: string;
 }

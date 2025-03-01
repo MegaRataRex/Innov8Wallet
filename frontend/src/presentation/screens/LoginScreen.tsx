@@ -13,12 +13,14 @@ import ActionButtons from '../../components/ActionButton';
 import {styles} from '../theme/app_themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiFetcher } from '../../config/adapters/api_fetcher';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
-
+  const navigation = useNavigation();
   interface LoginResponse {
     token: string;
     userId: number;
+    name: string
   }
 
     const [email, setEmail] = useState('');
@@ -72,8 +74,12 @@ const LoginScreen = () => {
         password,
       });
 
-      if (response.token) {
+      if (response) {
+        const firstName = response.name.split(' ')[0].toUpperCase();
+        AsyncStorage.setItem('name', firstName);
         AsyncStorage.setItem('token', response.token);
+        AsyncStorage.setItem('userId', response.userId.toString());
+        navigation.navigate('Home' as never);
         // Navigate to the next screen if necessary
       } else {
       }
@@ -117,7 +123,7 @@ const LoginScreen = () => {
             handleLogin();  // Call login function
             }
             }}>
-              <Text style={localStyles.loginButtonText}>Login</Text>
+              <Text style={localStyles.loginButtonText}>{isEmailInput ? 'Sig.' : 'Login'}</Text>
             </TouchableOpacity>
             </View>
           <Text style={localStyles.forgotPassword}>

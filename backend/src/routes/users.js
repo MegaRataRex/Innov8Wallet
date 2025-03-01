@@ -129,7 +129,12 @@ router.post("/login", (req, res) => {
           expiresIn: "7d",
         });
 
-        res.json({ message: "Login successful", token, userId: user.id });
+        res.json({
+          message: "Login successful",
+          token,
+          userId: user.id,
+          name: user.name,
+        });
       }
     );
   } catch (error) {
