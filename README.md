@@ -1,97 +1,48 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Innov8 Wallet
 
-# Getting Started
+![Logo](https://github.com/MegaRataRex/Innov8Wallet/blob/main/icon.png?raw=true)
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+El presente proyecto es el prototipo funcional basado en el proyecto de figma. Esta aplicación pretende conectar la lógica que está desplegada en el servidor, en la dirección
 
-## Step 1: Start Metro
+https://continual-rhino-451822-t8.uw.r.appspot.com/
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+Para probar el proyecto, los requerimientos son los siguientes:
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+1. Descargar Android Studio, el cual viene incluido con un emulador. Asegurarse de incluir las variables de entorno ANDROID_HOME en el sistema. Más detalles para establecer el entorno vienen en: https://reactnative.dev/docs/set-up-your-environment
 
-```sh
-# Using npm
-npm start
+2. Instalar Java 17 Development Kit. Cualquier otra versión puede fallar. Java 17 JDK se encuentra en: https://adoptium.net/es/temurin/releases/?os=windows&package=jdk&version=17 . En la instalación, incluir la variable de entorno JAVA_HOME, la cual es una de las opciones de instalación.
 
-# OR using Yarn
-yarn start
-```
+3. Asegurarse de tener instalado NodeJS, este se encuentra en: https://nodejs.org/en
 
-## Step 2: Build and run your app
+4. Abrir la terminal o un editor de código con terminal en la carpeta ./frontend del proyecto. para acceder a esta correr el comando cd ./frontend.
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+5. correr el comando npm install.
 
-### Android
+6. correr el comando npm run android. Se abrirá un emulador de Android y se correrá la aplicación, una vez se termine de instalar en el teléfono. Esto puede tomar un tiempo.
 
-```sh
-# Using npm
-npm run android
+Finalmente, al tener abierta la aplicación. Iniciar sesión con la cuenta de prueba:
 
-# OR using Yarn
-yarn android
-```
+Usuario:
+santybel.1@hotmail.com (se tiene que usar el teclado del teléfono para escribir la @)
+![alt text](https://github.com/MegaRataRex/Innov8Wallet/blob/main/app_pass.PNG?raw=true)
 
-### iOS
+Dar click en Sig.
+![alt text](https://github.com/MegaRataRex/Innov8Wallet/blob/main/next.PNG?raw=true)
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+Contraseña: SaTB-0806
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Listo!
 
-```sh
-bundle install
-```
+también puedes registrar un usuario realizando una petición http POST en postman en:
 
-Then, and every time you update your native dependencies, run:
+con el formato:
 
-```sh
-bundle exec pod install
-```
+{
+name: "tu_nombre",
+email: "tu_correo",
+password: "contraseña"
+}
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+https://continual-rhino-451822-t8.uw.r.appspot.com/users/register
 
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Listo! se pueden probar el resto de las funciones en el backend, sin embargo es un prototipo con las funciones básicas y con una base de datos escalable.
