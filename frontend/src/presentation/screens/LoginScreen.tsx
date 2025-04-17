@@ -26,6 +26,11 @@ const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isEmailInput, setIsEmailInput] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
+    const validateEmail = (email: string) => {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(email);
+    };
   // Logo icons array - assuming these exist in your asset
 
   const logo = require('../../assets/icons/g24.png');
@@ -69,6 +74,7 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     try {
+      setErrorMessage('');
       const response: LoginResponse = await ApiFetcher.post('/users/login', {
         email,
         password,
@@ -81,9 +87,10 @@ const LoginScreen = () => {
         AsyncStorage.setItem('userId', response.userId.toString());
         navigation.navigate('Home' as never);
         // Navigate to the next screen if necessary
-      } else {
       }
-    } catch (error) {
+    } catch (error:any){
+      console.error(error);
+      setErrorMessage('Correo o contraseña incorrectos. Inténtalo de nuevo.');
     }
   };
 
@@ -118,18 +125,35 @@ const LoginScreen = () => {
             />
             <TouchableOpacity style={localStyles.loginButton}  onPress={() => {
             if (isEmailInput) {
-              setIsEmailInput(false);  // Switch to password input
+              if (!validateEmail(email)) {
+                setErrorMessage('Correo inválido. Ingresa un correo válido.');
+                return;
+              }
+              setErrorMessage('');
+              setIsEmailInput(false);
             } else {
-            handleLogin();  // Call login function
+              handleLogin();
             }
             }}>
               <Text style={localStyles.loginButtonText}>{isEmailInput ? 'Sig.' : 'Login'}</Text>
             </TouchableOpacity>
             </View>
-          <Text style={localStyles.forgotPassword}>
-            Tengo problemas para iniciar sesion
-          </Text>
+            {!isEmailInput && (
+              <TouchableOpacity onPress={() => {
+                setPassword('');
+                setIsEmailInput(true);
+                setErrorMessage('');
+              }}>
+                <Text style={[localStyles.forgotPassword, { color: '#E31837' }]}>
+                  Ingresar otro correo
+                </Text>
+              </TouchableOpacity>
+            )}
         </View>
+
+        {errorMessage !== '' && (
+          <Text style={localStyles.errorText}>{errorMessage}</Text>
+        )}
 
         {/* Action Buttons */}
         <View style={localStyles.actionButtonsWrapper}>
@@ -264,6 +288,12 @@ const localStyles = StyleSheet.create({
   },
   loginButtonText: {
     color: 'white',
+    fontWeight: 'bold',
+  },
+  errorText: {
+    color: '#FF4C4C',
+    marginTop: 10,
+    textAlign: 'center',
     fontWeight: 'bold',
   },
 });
