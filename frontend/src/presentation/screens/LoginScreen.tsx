@@ -139,15 +139,16 @@ const LoginScreen = () => {
             </TouchableOpacity>
             </View>
             {!isEmailInput && (
-              <TouchableOpacity onPress={() => {
+              <TouchableOpacity
+              style={localStyles.secondaryButton}
+              onPress={() => {
                 setPassword('');
                 setIsEmailInput(true);
                 setErrorMessage('');
-              }}>
-                <Text style={[localStyles.forgotPassword, { color: '#E31837' }]}>
-                  Ingresar otro correo
-                </Text>
-              </TouchableOpacity>
+              }}
+            >
+              <Text style={localStyles.secondaryButtonText}>Ingresar otro correo</Text>
+            </TouchableOpacity>
             )}
         </View>
 
@@ -235,7 +236,12 @@ const localStyles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   input: {
+    flex: 1,
     fontSize: 16,
+    backgroundColor: '#F2F2F2', // gris claro
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   forgotPassword: {
     color: 'white',
@@ -272,11 +278,11 @@ const localStyles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
     borderRadius: 8,
     height: 50,
     justifyContent: 'space-between',
     paddingHorizontal: 10,
+    gap: 10,
   },
 
   loginButton: {
@@ -295,6 +301,20 @@ const localStyles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  secondaryButton: {
+    borderColor: '#E31837',
+    borderWidth: 1.5,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 15,
+    alignSelf: 'center',
+  },
+  secondaryButtonText: {
+    color: '#E31837',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
