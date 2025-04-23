@@ -8,18 +8,13 @@ const openaiClient = new openai.OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
 router.post("/", async (req, res) => {
   const { userId, message } = req.body;
   try {
-    const [transactions] = await db.query(
+    const transactions = db.query(
       "SELECT amount, description, type FROM transactions WHERE user_id = ?",
       [userId]
     );
-    const userData = transactions
-      .map((t) => `${t.description}: ${t.type} de $${t.amount}`)
-      .join("\n");
     const prompt = `
         Eres un asistente financiero de Banorte. Analiza los siguientes datos de gastos del usuario y responde a su pregunta.
-        
-        Datos de gastos:
-        ${userData}
+      
 
         Pregunta del usuario:
         "${message}"
@@ -32,7 +27,7 @@ router.post("/", async (req, res) => {
       temperature: 0.5,
     });
 
-    res.json({ response: response.choices[0].message.content });
+    res.json({ response: response.output_text });
   } catch (error) {
     console.error("Error en la consulta a Maya:", error);
     res.status(500).json({ error: "Error procesando la solicitud" });
@@ -43,7 +38,7 @@ router.post("/advice", async (req, res) => {
   const { userId, action } = req.body;
 
   try {
-    const [transactions] = await db.query(
+    const [transactions] = db.query(
       "SELECT amount, description, type FROM transactions WHERE user_id = ?",
       [userId]
     );
@@ -67,7 +62,7 @@ router.post("/advice", async (req, res) => {
       temperature: 0.3,
     });
 
-    res.json({ response: response.choices[0].message.content });
+    res.json({ response: response.output_text });
   } catch (error) {
     console.error("Error en la consulta a Maya:", error);
     res.status(500).json({ error: "Error procesando la solicitud" });

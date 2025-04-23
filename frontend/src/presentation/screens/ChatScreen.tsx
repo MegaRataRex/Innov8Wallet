@@ -13,12 +13,8 @@ import {Message} from '../../components/Message';
 import {ChatInput} from '../../components/ChatInput';
 import {Container} from '../../components/Container';
 
-interface ChatMessage {
-  id: string;
-  text: string;
-  isUser: boolean;
-  timestamp: string;
-}
+
+
 
 export const ChatScreen = () => {
   const navigation = useNavigation();
@@ -52,19 +48,10 @@ export const ChatScreen = () => {
     
     // Here you would typically handle the AI response
     // For now, we'll just add a simple response
-    setTimeout(() => {
-      const botResponse: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        text: 'Estoy procesando tu mensaje...',
-        isUser: false,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-      };
-      setMessages(prevMessages => [...prevMessages, botResponse]);
-    }, 1000);
-  };
+    const response = await axios.post('/api/maya', {
+      userId: user.id, // Asumiendo que tienes acceso al ID del usuario
+      message: text,
+    })
 
   return (
     <SafeAreaView style={styles.safeArea}>
