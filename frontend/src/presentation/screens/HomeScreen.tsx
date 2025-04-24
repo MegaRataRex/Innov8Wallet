@@ -215,7 +215,10 @@ export const HomeScreen = () => {
           </View>
 
           <View style={localStyles.quickActions}>
-            <TouchableOpacity style={localStyles.actionItem}>
+            <TouchableOpacity
+            style={localStyles.actionItem}
+            onPress={() => navigation.navigate('TransferScreen')}
+            >
               <Image
                 source={require('../../assets/icons/transfer.png')}
                 style={localStyles.actionIcon}
@@ -325,6 +328,9 @@ export const HomeScreen = () => {
                         onPress={() => {
                           toggleMenu();
                           console.log(`Menu item clicked: ${item.label}`);
+                          if (item.id === 'transferir') {
+                            navigation.navigate('TransferScreen');
+                          }
                         }}
                       >
                         <View>

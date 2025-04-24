@@ -109,7 +109,7 @@ const LoginScreen = () => {
         {/* Welcome Section */}
         <View style={localStyles.welcomeSection}>
           <Text style={localStyles.welcomeText}>HOLA USUARIO</Text>
-          <Text>{isEmailInput ? 'Ingresa tu correo' : 'Password'}</Text>
+          <Text>{isEmailInput ? 'Ingresa tu correo' : 'Contraseña'}</Text>
         </View>
 
         {/* Login Form Section */}

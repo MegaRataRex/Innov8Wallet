@@ -2,11 +2,45 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {HomeScreen} from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import { ChatScreen } from '../screens/ChatScreen';
+import { TransferScreen } from '../screens/TransferScreen';
+import { TransferAmountScreen } from '../screens/TransferAmountScreen';
+import { TransferConfirmationScreen } from '../screens/TransferConfirmationScreen';
+import { TransferSuccessScreen } from '../screens/TransferSuccessScreen';
 
 export type RootStackParams = {
   Home: undefined;
   LoginScreen: undefined;
   Chat: undefined;
+  TransferScreen: undefined;
+  TransferAmountScreen: {
+    contact: {
+      id: string
+      name: string
+      bank: string
+      accountType: string
+      accountNumber: string
+    }
+  };
+  TransferConfirmationScreen: {
+    contact: {
+      id: string
+      name: string
+      bank: string
+      accountType: string
+      accountNumber: string
+    }
+    amount: number
+  }
+  TransferSuccessScreen: {
+    contact: {
+      id: string
+      name: string
+      bank: string
+      accountType: string
+      accountNumber: string
+    }
+    amount: number
+  }
 };
 
 const Stack = createStackNavigator<RootStackParams>();
@@ -17,6 +51,10 @@ export const Navigation = () => {
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="TransferScreen" component={TransferScreen} />
+      <Stack.Screen name="TransferAmountScreen" component={TransferAmountScreen} />
+      <Stack.Screen name="TransferConfirmationScreen" component={TransferConfirmationScreen} />
+      <Stack.Screen name="TransferSuccessScreen" component={TransferSuccessScreen} />
     </Stack.Navigator>
   );
 };
