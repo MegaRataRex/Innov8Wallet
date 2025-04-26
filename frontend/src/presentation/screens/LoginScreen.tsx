@@ -1,76 +1,48 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ImageBackground,
-  StyleSheet,
-  Image,
-  SafeAreaView,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
-import ActionButtons from '../../components/ActionButton';
-import {styles} from '../theme/app_themes';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, SafeAreaView, TextInput, TouchableOpacity, Modal, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiFetcher } from '../../config/adapters/api_fetcher';
 import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+  const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height);
+
+  // Update screen dimensions when orientation changes
+  useEffect(() => {
+    const updateDimensions = () => {
+      setScreenWidth(Dimensions.get('window').width);
+      setScreenHeight(Dimensions.get('window').height);
+    };
+
+    Dimensions.addEventListener('change', updateDimensions);
+
+    return () => {
+      // Clean up event listener
+      // Note: In newer React Native versions, this might need to be updated
+      // as the API has changed in recent versions
+    };
+  }, []);
+
   interface LoginResponse {
-    token: string;
-    userId: number;
+    token: string
+    userId: number
     name: string
   }
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isEmailInput, setIsEmailInput] = useState(true);
-    const [errorMessage, setErrorMessage] = useState('');
-    const validateEmail = (email: string) => {
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return regex.test(email);
-    };
-  // Logo icons array - assuming these exist in your asset
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isEmailInput, setIsEmailInput] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showCredentials, setShowCredentials] = useState(false);
 
-  const logo = require('../../assets/icons/g24.png');
-
-  // Handle button presses
-  const handleInfoPress = () => {
-    console.log('Info button pressed');
+  const validateEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   };
-
-  const handleQrPress = () => {
-    console.log('QR button pressed');
-  };
-
-  const handleSupportPress = () => {
-    console.log('Support button pressed');
-  };
-
-  const handleMorePress = () => {
-    console.log('More button pressed');
-  };
-
-  // Action buttons configuration
-  const actionButtonsConfig = [
-    {
-      icon: require('../../assets/icons/info-icon.png'),
-      onPress: handleInfoPress,
-    },
-    {
-      icon: require('../../assets/icons/qr-icon.png'),
-      onPress: handleQrPress,
-    },
-    {
-      icon: require('../../assets/icons/support-icon.png'),
-      onPress: handleSupportPress,
-    },
-    {
-      icon: require('../../assets/icons/key-icon.png'),
-      onPress: handleMorePress,
-    },
-  ];
 
   const handleLogin = async () => {
     try {
@@ -86,235 +58,302 @@ const LoginScreen = () => {
         AsyncStorage.setItem('token', response.token);
         AsyncStorage.setItem('userId', response.userId.toString());
         navigation.navigate('Home' as never);
-        // Navigate to the next screen if necessary
+        setShowCredentials(false);
+        setIsEmailInput(true);
       }
-    } catch (error:any){
+    } catch (error: any) {
       console.error(error);
       setErrorMessage('Correo o contraseña incorrectos. Inténtalo de nuevo.');
     }
   };
 
+  const handleFaceIDLogin = () => {
+    // Implement Face ID login logic here
+    console.log('Face ID login pressed');
+  };
+
+  const handleEmergency = () => {
+    // Implement emergency functionality
+    console.log('Emergency button pressed');
+  };
+
   return (
-    <ImageBackground
-      source={require('../../assets/images/building-background.jpg')}
-      style={styles.background}>
-      <SafeAreaView style={styles.container}>
-        {/* Logo Section */}
-        <View style={localStyles.logoContainer}>
-          <View style={localStyles.logoShapes}>
-            <Image source={logo} />
+    <SafeAreaView style={styles.container}>
+      {/* Arc Image - Direct Approach */}
+      <View style={styles.arcContainer}>
+        <Image
+          source={require("../../assets/icons/arc-gradient.png")}
+          style={{
+            width: screenWidth * .9,
+            height: screenHeight * .95,
+            position: "absolute",
+            right: -screenWidth * 0.0,
+            top: screenHeight * 0.3,
+            //tintColor: "#ffb3b3", // Light red tint
+            opacity: 0.6,
+            resizeMode: "contain",
+          }}
+        />
+      </View>
+
+      {/* Logo Section */}
+      <View style={styles.logoContainer}>
+        <Image source={require('../../assets/icons/g24-2.png')} style={styles.logo} resizeMode="contain" />
+      </View>
+
+      {/* Welcome Section */}
+      <View style={styles.welcomeSection}>
+        <Text style={styles.welcomeText}>HOLA, SERGIO.</Text>
+      </View>
+
+      {/* Face ID Login Option */}
+      <View style={styles.faceIdContainer}>
+        <Text style={styles.faceIdText}>Inicia sesion con Face ID</Text>
+        <TouchableOpacity style={styles.faceIdButton} onPress={handleFaceIDLogin}>
+          <Image source={require('../../assets/icons/scan.png')} style={styles.faceIdIcon} />
+          <Text style={styles.faceIdLabel}>Face ID</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Credentials Login Option */}
+      <TouchableOpacity style={styles.credentialsButton} onPress={() => setShowCredentials(true)}>
+        <Text style={styles.credentialsText}>Iniciar con credenciales de acceso</Text>
+      </TouchableOpacity>
+
+      {/* Emergency Button */}
+      <TouchableOpacity style={styles.emergencyButton} onPress={handleEmergency}>
+        <Text style={styles.emergencyText}>EMERGENCIA</Text>
+        <Image source={require('../../assets/icons/arrow-up.png')} style={styles.arrowIcon} />
+      </TouchableOpacity>
+
+      {/* Credentials Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showCredentials}
+        onRequestClose={() => setShowCredentials(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Credenciales de acceso</Text>
+
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder={isEmailInput ? 'Correo' : 'Contraseña'}
+                value={isEmailInput ? email : password}
+                onChangeText={(text) => (isEmailInput ? setEmail(text) : setPassword(text))}
+                placeholderTextColor="#666"
+                autoCorrect={false}
+                secureTextEntry={!isEmailInput}
+              />
+            </View>
+
+            {errorMessage !== '' && <Text style={styles.errorText}>{errorMessage}</Text>}
+
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => {
+                  setShowCredentials(false);
+                  setIsEmailInput(true);
+                  setErrorMessage('');
+                }}
+              >
+                <Text style={styles.cancelButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.continueButton}
+                onPress={() => {
+                  if (isEmailInput) {
+                    if (!validateEmail(email)) {
+                      setErrorMessage('Correo inválido. Ingresa un correo válido.');
+                      return;
+                    }
+                    setErrorMessage('');
+                    setIsEmailInput(false);
+                  } else {
+                    handleLogin();
+                  }
+                }}
+              >
+                <Text style={styles.continueButtonText}>{isEmailInput ? 'Continuar' : 'Iniciar sesión'}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-
-        {/* Welcome Section */}
-        <View style={localStyles.welcomeSection}>
-          <Text style={localStyles.welcomeText}>HOLA USUARIO</Text>
-          <Text>{isEmailInput ? 'Ingresa tu correo' : 'Contraseña'}</Text>
-        </View>
-
-        {/* Login Form Section */}
-        <View style={localStyles.formContainer}>
-          <View style={localStyles.inputRow}>
-          <TextInput
-              style={localStyles.input}
-              placeholder={isEmailInput ? 'Correo' : 'Contraseña'}
-              value={isEmailInput ? email : password}
-              onChangeText={(text) => (isEmailInput ? setEmail(text) : setPassword(text))}
-              placeholderTextColor="#666"
-              autoCorrect={false}
-            />
-            <TouchableOpacity style={localStyles.loginButton}  onPress={() => {
-            if (isEmailInput) {
-              if (!validateEmail(email)) {
-                setErrorMessage('Correo inválido. Ingresa un correo válido.');
-                return;
-              }
-              setErrorMessage('');
-              setIsEmailInput(false);
-            } else {
-              handleLogin();
-            }
-            }}>
-              <Text style={localStyles.loginButtonText}>{isEmailInput ? 'Sig.' : 'Login'}</Text>
-            </TouchableOpacity>
-            </View>
-            {!isEmailInput && (
-              <TouchableOpacity
-              style={localStyles.secondaryButton}
-              onPress={() => {
-                setPassword('');
-                setIsEmailInput(true);
-                setErrorMessage('');
-              }}
-            >
-              <Text style={localStyles.secondaryButtonText}>Ingresar otro correo</Text>
-            </TouchableOpacity>
-            )}
-        </View>
-
-        {errorMessage !== '' && (
-          <Text style={localStyles.errorText}>{errorMessage}</Text>
-        )}
-
-        {/* Action Buttons */}
-        <View style={localStyles.actionButtonsWrapper}>
-          <ActionButtons buttons={actionButtonsConfig} />
-        </View>
-
-        {/* Card Promotion Section */}
-        <View style={localStyles.cardPromoContainer}>
-          <Text style={localStyles.promoTitle}>DALE A TU NOMINA</Text>
-          <Text style={localStyles.promoText}>
-            Tarjeta banorte NOMINA, controla tus gastos directos con nuestra
-            tarjeta especial para asalariados
-          </Text>
-          <Image
-            source={require('../../assets/images/nomina-card.png')}
-            style={localStyles.cardImage}
-          />
-        </View>
-      </SafeAreaView>
-    </ImageBackground>
+      </Modal>
+    </SafeAreaView>
   );
 };
 
-const localStyles = StyleSheet.create({
-  background: {
-    flex: 1,
-    backgroundColor: 'black',
-    opacity: 1,
-  },
+const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
     paddingHorizontal: 20,
   },
   logoContainer: {
     marginTop: 40,
     alignItems: 'center',
   },
-  logoShapes: {
-    flexDirection: 'row',
-    marginBottom: 10,
-  },
-  logoShape: {
-    width: 30,
-    height: 30,
-    marginHorizontal: 2,
-  },
-  bankName: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  bankLetter: {
-    width: 20,
-    height: 25,
-    marginHorizontal: 1,
+  logo: {
+    width: 225,
+    height: 60,
   },
   welcomeSection: {
-    marginTop: 40,
+    marginTop: 80,
     alignItems: 'center',
   },
   welcomeText: {
-    fontSize: 24,
-    color: 'white',
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 8,
+    color: '#000',
   },
-  subText: {
-    fontSize: 16,
-    color: 'white',
-    textAlign: 'center',
+  faceIdContainer: {
+    marginTop: 25,
+    alignItems: 'center',
   },
-  formContainer: {
-    marginTop: 30,
-  },
-  inputContainer: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    height: 50,
-    justifyContent: 'center',
-    paddingHorizontal: 15,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    backgroundColor: '#F2F2F2', // gris claro
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  forgotPassword: {
-    color: 'white',
-    textAlign: 'center',
-    marginTop: 15,
-    textDecorationLine: 'underline',
-  },
-  actionButtonsWrapper: {
-    marginTop: 'auto', // This pushes the buttons to the bottom
-    paddingVertical: 20,
-  },
-  cardPromoContainer: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 20,
+  faceIdText: {
+    fontSize: 14,
+    color: '#000',
+    fontWeight: 'bold',
     marginBottom: 20,
   },
-  promoTitle: {
+  faceIdButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 120,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#f8f8f8',
+  },
+  faceIdIcon: {
+    width: 20,
+    height: 20,
+    tintColor: '#E31837',
+  },
+  faceIdLabel: {
+    marginTop: 5,
+    fontSize: 12,
+    color: '#7D7D7D',
+  },
+  credentialsButton: {
+    marginTop: 15,
+    alignItems: 'center',
+  },
+  credentialsText: {
+    fontSize: 14,
+    color: '#7D7D7D',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
+  arcContainer: {
+    position: 'absolute',
+    //right: 0, // Ensure container extends to right edge
+    //left: 0, // Ensure container extends to left edge
+    height: '100%',
+    //width: '100%',
+    right: 0,
+    left: 0,
+    zIndex: -1, // Ensure it stays behind other elements
+    overflow: 'hidden',
+  },
+  redArc: {
+    position: 'absolute',
+    top: '50%', // Position from middle of screen
+    // Create a gradient effect with varying opacity
+    backgroundColor: 'transparent',
+    borderColor: 'rgba(227, 24, 55, 0.15)',
+    borderBottomColor: 'rgba(227, 24, 55, 0.03)',
+    borderLeftColor: 'rgba(227, 24, 55, 0.08)',
+    borderTopColor: 'rgba(227, 24, 55, 0.15)',
+  },
+  emergencyButton: {
+    position: 'absolute',
+    bottom: 40,
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  emergencyText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#E31837',
+  },
+  arrowIcon: {
+    width: 10,
+    height: 10,
+    tintColor: '#E31837',
+    marginTop: 5,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#E31837',
-    marginBottom: 8,
+    marginBottom: 20,
+    textAlign: 'center',
   },
-  promoText: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 15,
+  inputContainer: {
+    marginBottom: 20,
   },
-  cardImage: {
-    width: '100%',
-    height: 120,
-    resizeMode: 'contain',
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  input: {
+    backgroundColor: '#F2F2F2',
     borderRadius: 8,
-    height: 50,
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    gap: 10,
-  },
-
-  loginButton: {
-    backgroundColor: '#E31837',
-    paddingVertical: 10,
     paddingHorizontal: 15,
-    borderRadius: 8,
-    marginLeft: 10,
-  },
-  loginButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    paddingVertical: 12,
+    fontSize: 16,
   },
   errorText: {
-    color: '#FF4C4C',
-    marginTop: 10,
+    color: '#E31837',
+    marginBottom: 15,
     textAlign: 'center',
     fontWeight: 'bold',
+    fontSize: 14,
   },
-  secondaryButton: {
-    borderColor: '#E31837',
-    borderWidth: 1.5,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  cancelButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 8,
-    marginTop: 15,
-    alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: '#E31837',
   },
-  secondaryButtonText: {
+  cancelButtonText: {
     color: '#E31837',
     fontWeight: 'bold',
-    textAlign: 'center',
+  },
+  continueButton: {
+    backgroundColor: '#E31837',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  continueButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

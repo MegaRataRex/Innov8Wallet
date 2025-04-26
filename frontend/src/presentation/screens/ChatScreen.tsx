@@ -49,7 +49,7 @@ export const ChatScreen = () => {
       }),
     };
     setMessages(prevMessages => [...prevMessages, newMessage]);
-    
+
     // Here you would typically handle the AI response
     // For now, we'll just add a simple response
     setTimeout(() => {
@@ -140,6 +140,5 @@ const styles = StyleSheet.create({
   icon: {
     width: 24,
     height: 24,
-    tintColor: '#E31837', // Banorte red color
   },
 });

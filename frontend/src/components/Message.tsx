@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Image} from 'react-native';
 
 interface MessageProps {
   text: string;
@@ -16,7 +16,7 @@ export const Message: React.FC<MessageProps> = ({text, isUser, timestamp}) => {
       ]}>
       {!isUser && (
         <View style={styles.avatarContainer}>
-          <View style={styles.avatar} />
+          <Image source={require('../assets/icons/chat-icon.png')} style={styles.avatar} />
         </View>
       )}
       <View style={[styles.bubble, isUser ? styles.userBubble : styles.botBubble]}>
@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#E31837', // Banorte red color
   },
   bubble: {
     maxWidth: '80%',

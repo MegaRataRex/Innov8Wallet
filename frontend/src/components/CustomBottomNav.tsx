@@ -44,7 +44,7 @@ export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => 
         onPress={handleChatPress}
         style={styles.middleButton}
       >
-        <Image source={require('../assets/icons/chat-icon.png')} style={styles.icon} />
+        <Image source={require('../assets/icons/chat-icon.png')} style={styles.iconCenter} />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.tabButton}
@@ -93,27 +93,23 @@ const styles = StyleSheet.create({
     tintColor: '#EA0A2A',
   },
   middleButton: {
-    backgroundColor: '#E31837', // Banorte red color
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   icon: {
     width: 24,
     height: 24,
-    tintColor: '#E31837', // Banorte red color
+  },
+  iconCenter: {
+    width: 40,
+    height: 40,
   },
   centerButtonInner: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#EA0A2A',
   },
 });

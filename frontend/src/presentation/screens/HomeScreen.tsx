@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from "react"
 import {
   View,
   Text,
@@ -25,12 +25,26 @@ import { useNavigation, CommonActions } from '@react-navigation/native';
 // Define the navigation prop type
 type NavigationProps = any;
 
+// Define transaction type
+interface Transaction {
+  id: string
+  name: string
+  description: string
+  amount: number
+  date: string
+  isIncoming: boolean
+}
+
 export const HomeScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [name, setName] = useState('');
   const {isLoading, userCards} = useCards();
   const[isLoadingName, setIsLoadingName] = useState(true);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const transactionsScrollViewRef = useRef<ScrollView>(null);
 
 
   useEffect(() => {
@@ -49,6 +63,73 @@ export const HomeScreen = () => {
 
     fetchName();
   }, [setIsLoadingName]);
+
+  useEffect(() => {
+    // Simulate fetching transactions from an API
+    const fetchTransactions = async () => {
+      try {
+        // In a real app, you would fetch this data from your API
+        const mockTransactions: Transaction[] = [
+          {
+            id: "1",
+            name: "Amazon",
+            description: "Pago con tarjeta",
+            amount: 723.0,
+            date: "2023-06-15",
+            isIncoming: false,
+          },
+          {
+            id: "2",
+            name: "SPEI recibido",
+            description: "transferencia inter",
+            amount: 530.0,
+            date: "2023-06-14",
+            isIncoming: true,
+          },
+          {
+            id: "3",
+            name: "Carl's Jr",
+            description: "Pago con tarjeta",
+            amount: 169.0,
+            date: "2023-06-13",
+            isIncoming: false,
+          },
+          {
+            id: "4",
+            name: "Nómina",
+            description: "Depósito quincenal",
+            amount: 8500.0,
+            date: "2023-06-01",
+            isIncoming: true,
+          },
+          {
+            id: "5",
+            name: "Netflix",
+            description: "Suscripción mensual",
+            amount: 219.0,
+            date: "2023-05-28",
+            isIncoming: false,
+          },
+          {
+            id: "6",
+            name: "Uber",
+            description: "Servicio de transporte",
+            amount: 145.5,
+            date: "2023-05-25",
+            isIncoming: false,
+          },
+        ];
+
+        setTransactions(mockTransactions);
+      } catch (error) {
+        console.error("Error fetching transactions:", error)
+      } finally {
+        setIsLoadingTransactions(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
 
   const handleNavPress = (screenName: string) => {
@@ -79,6 +160,32 @@ export const HomeScreen = () => {
       console.error('Error during logout:', error);
     }
   };
+
+  const renderTransactionItem = (item: Transaction) => (
+    <TouchableOpacity
+      key={item.id}
+      style={localStyles.transactionItem}
+      onPress={() => console.log(`Transaction clicked: ${item.name}`)}
+    >
+      <View style={localStyles.transactionInfo}>
+        <Text style={[localStyles.transactionName, styles.text]}>{item.name}</Text>
+        <Text style={[localStyles.transactionDescription, styles.text]}>{item.description}</Text>
+      </View>
+      <View style={localStyles.transactionAmountContainer}>
+        <View style={localStyles.amountIndicator}>
+          <Image
+            source={
+              item.isIncoming ? require("../../assets/icons/incoming.png") : require("../../assets/icons/outgoing.png")
+            }
+            style={[localStyles.indicatorIcon, { tintColor: item.isIncoming ? "#28a745" : "#EA0A2A" }]}
+          />
+        </View>
+        <Text style={[localStyles.transactionAmount, styles.text]}>
+          {item.isIncoming ? "" : "-"}${item.amount.toFixed(2)}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   const ads = [
     {
@@ -165,7 +272,7 @@ export const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.background}>
-      <ScrollView contentContainerStyle={localStyles.scrollContent}>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={localStyles.scrollContent} nestedScrollEnabled={true}>
         <Container>
           <View style={localStyles.header}>
             <View style={localStyles.userInfo}>
@@ -266,6 +373,34 @@ export const HomeScreen = () => {
             </TouchableOpacity>
           </View>
         </Container>
+
+        {/* Recent Transactions Section */}
+        <Container>
+          <View style={localStyles.transactionsHeader}>
+            <Text style={[localStyles.sectionTitle, styles.text]}>Mis ultimos movimientos</Text>
+            <TouchableOpacity onPress={() => console.log("View all transactions")}>
+              <Image source={require("../../assets/icons/arrow-right.png")} style={localStyles.arrowIcon} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={localStyles.transactionsContainer}>
+            {isLoadingTransactions ? (
+              <Shimmer />
+            ) : transactions.length === 0 ? (
+              <Text style={[styles.text, localStyles.noTransactionsText]}>No hay movimientos recientes</Text>
+            ) : (
+              <ScrollView
+                ref={transactionsScrollViewRef}
+                nestedScrollEnabled={true}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={localStyles.transactionsScrollContent}
+              >
+                {transactions.map((item) => renderTransactionItem(item))}
+              </ScrollView>
+            )}
+          </View>
+        </Container>
+
         <View style={localStyles.adsSection}>
           <ScrollView
             horizontal
@@ -461,7 +596,7 @@ const localStyles = StyleSheet.create({
     width: 24,
     height: 24,
     marginBottom: 8,
-    tintColor: '#EA0A2A',
+    //tintColor: '#EA0A2A',
   },
   actionText: {
     fontSize: 12,
@@ -474,6 +609,74 @@ const localStyles = StyleSheet.create({
   adsScrollContent: {
     paddingHorizontal: 16,
     paddingVertical: 16,
+  },
+
+  // Transactions styles
+  transactionsHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  arrowIcon: {
+    width: 20,
+    height: 20,
+  },
+  transactionsList: {
+    marginBottom: 16,
+  },
+  transactionsContainer: {
+    height: 215, // Fixed height for the transactions container
+    marginBottom: 16,
+    //overflow: "hidden",
+  },
+  transactionsScrollContent: {
+    paddingRight: 5, // Add a bit of padding for the scrollbar
+  },
+  transactionItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  transactionInfo: {
+    flex: 1,
+  },
+  transactionName: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 4,
+  },
+  transactionDescription: {
+    fontSize: 14,
+    color: "#666",
+  },
+  transactionAmountContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  amountIndicator: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+  },
+  indicatorIcon: {
+    width: 12,
+    height: 12,
+  },
+  transactionAmount: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  noTransactionsText: {
+    textAlign: "center",
+    marginVertical: 20,
+    color: "#666",
   },
 
   // Modal styles
