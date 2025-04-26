@@ -8,28 +8,26 @@ const openaiClient = new openai.OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
 router.post("/", async (req, res) => {
   const { userId, message } = req.body;
   try {
-    const [transactions] = await db.query(
+    const transactions = db.query(
       "SELECT amount, description, type FROM transactions WHERE user_id = ?",
       [userId]
     );
-    const userData = transactions
-      .map((t) => `${t.description}: ${t.type} de $${t.amount}`)
-      .join("\n");
-    const prompt = `
+    const sysPrompt = `
         Eres un asistente financiero de Banorte. Analiza los siguientes datos de gastos del usuario y responde a su pregunta.
-        
-        Datos de gastos:
-        ${userData}
-
-        Pregunta del usuario:
-        "${message}"
-
-        Responde con recomendaciones claras y personalizadas.
+        Responde con recomendaciones claras, concisas y personalizadas. Mantén tus respuestas breves (preferentemente bajo 100 palabras), salvo que la complejidad de la consulta requiera mayor detalle.
     `;
+    const prompt = `
+      Pregunta del usuario:
+      ${message}
+    `;
+
     const response = await openaiClient.chat.completions.create({
       model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.5,
+      messages: [
+        { role: "system", content: sysPrompt },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.2,
     });
 
     res.json({ response: response.choices[0].message.content });
@@ -43,7 +41,7 @@ router.post("/advice", async (req, res) => {
   const { userId, action } = req.body;
 
   try {
-    const [transactions] = await db.query(
+    const [transactions] = db.query(
       "SELECT amount, description, type FROM transactions WHERE user_id = ?",
       [userId]
     );
@@ -64,10 +62,10 @@ router.post("/advice", async (req, res) => {
     const response = await openaiClient.chat.completions.create({
       model: "gpt-4",
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.3,
+      temperature: 0.1,
     });
 
-    res.json({ response: response.choices[0].message.content });
+    res.json({ response: response.output_text });
   } catch (error) {
     console.error("Error en la consulta a Maya:", error);
     res.status(500).json({ error: "Error procesando la solicitud" });
