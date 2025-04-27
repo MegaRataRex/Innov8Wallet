@@ -12,7 +12,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Message} from '../../components/Message';
 import {ChatInput} from '../../components/ChatInput';
 import {Container} from '../../components/Container';
-
+import { ChatMessage } from '../../interfaces/chatMessage';
 
 
 
@@ -34,6 +34,8 @@ export const ChatScreen = () => {
     setMessages([initialMessage]);
   }, []);
 
+ 
+ /*
   const handleSendMessage = (text: string) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -45,14 +47,14 @@ export const ChatScreen = () => {
       }),
     };
     setMessages(prevMessages => [...prevMessages, newMessage]);
-
+*/
     // Here you would typically handle the AI response
     // For now, we'll just add a simple response
-    const response = await axios.post('/api/maya', {
+   /* const response = await axios.post('/api/maya', {
       userId: user.id, // Asumiendo que tienes acceso al ID del usuario
       message: text,
     })
-
+*/
   return (
     <SafeAreaView style={styles.safeArea}>
       <Container>
@@ -86,7 +88,7 @@ export const ChatScreen = () => {
         />
 
         {/* Chat Input */}
-        <ChatInput onSendMessage={handleSendMessage} />
+        <ChatInput onSendMessage={} />
       </Container>
     </SafeAreaView>
   );
@@ -129,3 +131,4 @@ const styles = StyleSheet.create({
     height: 24,
   },
 });
+};
