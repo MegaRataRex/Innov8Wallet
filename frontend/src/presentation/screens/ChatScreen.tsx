@@ -12,9 +12,13 @@ import {useNavigation} from '@react-navigation/native';
 import {Message} from '../../components/Message';
 import {ChatInput} from '../../components/ChatInput';
 import {Container} from '../../components/Container';
-import { ChatMessage } from '../../interfaces/chatMessage';
 
-
+interface ChatMessage {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: string;
+}
 
 export const ChatScreen = () => {
   const navigation = useNavigation();
@@ -34,8 +38,6 @@ export const ChatScreen = () => {
     setMessages([initialMessage]);
   }, []);
 
- 
- /*
   const handleSendMessage = (text: string) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -47,14 +49,22 @@ export const ChatScreen = () => {
       }),
     };
     setMessages(prevMessages => [...prevMessages, newMessage]);
-*/
     // Here you would typically handle the AI response
     // For now, we'll just add a simple response
-   /* const response = await axios.post('/api/maya', {
-      userId: user.id, // Asumiendo que tienes acceso al ID del usuario
-      message: text,
-    })
-*/
+    setTimeout(() => {
+      const botResponse: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        text: 'Estoy procesando tu mensaje...',
+        isUser: false,
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      };
+      setMessages(prevMessages => [...prevMessages, botResponse]);
+    }, 1000);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <Container>
@@ -88,7 +98,7 @@ export const ChatScreen = () => {
         />
 
         {/* Chat Input */}
-        <ChatInput onSendMessage={} />
+        <ChatInput onSendMessage={handleSendMessage} />
       </Container>
     </SafeAreaView>
   );
@@ -129,6 +139,6 @@ const styles = StyleSheet.create({
   icon: {
     width: 24,
     height: 24,
+    tintColor: '#E31837', // Banorte red color
   },
 });
-};
