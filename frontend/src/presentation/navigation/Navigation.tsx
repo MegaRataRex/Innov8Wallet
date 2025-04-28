@@ -6,12 +6,38 @@ import { TransferScreen } from '../screens/TransferScreen';
 import { TransferAmountScreen } from '../screens/TransferAmountScreen';
 import { TransferConfirmationScreen } from '../screens/TransferConfirmationScreen';
 import { TransferSuccessScreen } from '../screens/TransferSuccessScreen';
+import { WithdrawalScreen } from '../screens/WithdrawalScreen';
+import { WithdrawalConfirmationScreen } from '../screens/WithdrawalConfirmationScreen';
+import { AddContactScreen } from '../screens/AddContactScreen';
+import { ContactDetailsScreen } from "../screens/ContactDetailsScreen";
 
 export type RootStackParams = {
   Home: undefined;
   LoginScreen: undefined;
   Chat: undefined;
-  TransferScreen: undefined;
+  TransferScreen:
+    | {
+        newContact?: {
+          id: string
+          name: string
+          bank: string
+          accountType: string
+          accountNumber: string
+        }
+      }
+    | undefined
+  WithdrawalScreen: undefined;
+  WithdrawalConfirmationScreen: {
+    amount: number
+  }
+  AddContactScreen: undefined;
+  ContactDetailsScreen: {
+    accountNumber: string
+    bankInfo: {
+      bankName: string
+      accountType: string
+    }
+  }
   TransferAmountScreen: {
     contact: {
       id: string
@@ -52,6 +78,10 @@ export const Navigation = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
       <Stack.Screen name="TransferScreen" component={TransferScreen} />
+      <Stack.Screen name="WithdrawalScreen" component={WithdrawalScreen} />
+      <Stack.Screen name="WithdrawalConfirmationScreen" component={WithdrawalConfirmationScreen} />
+      <Stack.Screen name="AddContactScreen" component={AddContactScreen} />
+      <Stack.Screen name="ContactDetailsScreen" component={ContactDetailsScreen} />
       <Stack.Screen name="TransferAmountScreen" component={TransferAmountScreen} />
       <Stack.Screen name="TransferConfirmationScreen" component={TransferConfirmationScreen} />
       <Stack.Screen name="TransferSuccessScreen" component={TransferSuccessScreen} />
