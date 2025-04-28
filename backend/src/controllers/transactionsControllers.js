@@ -3,38 +3,67 @@ const { categorizeSpending, subCategorize } = require("./categorize");
 const jwt = require("jsonwebtoken");
 
 exports.addTransaction = async (req, res) => {
-  const {
-    userId,
-    amount,
-    category,
-    type,
-    description,
-    sub_category,
-    payment_method_id,
-  } = req.body;
+  let transactions = req.body.transactions; // Expecting an array of transactions
 
-  if (!amount || !type || !payment_method_id) {
-    return res.status(400).json({ error: "Todos los campos son requeridos" });
+  if (!Array.isArray(transactions)) {
+    // If not an array, wrap single transaction into an array
+    transactions = [req.body];
   }
 
-  if (!category) {
-    category = categorizeSpending(description);
-    sub_category = subCategorize(description);
+  if (transactions.length === 0) {
+    return res.status(400).json({ error: "No transactions provided" });
   }
 
-  res.json({ description, amount, category });
+  const values = [];
 
+  for (let tx of transactions) {
+    let {
+      userId,
+      amount,
+      category,
+      type,
+      description,
+      sub_category,
+      payment_method_id,
+    } = tx;
+
+    if (!amount || !type || !payment_method_id) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Amount, type, and payment_method_id are required for each transaction",
+        });
+    }
+
+    if (!category) {
+      category = categorizeSpending(description);
+      sub_category = subCategorize(description);
+    }
+
+    values.push([
+      userId,
+      amount,
+      category,
+      type,
+      description,
+      sub_category,
+      payment_method_id,
+    ]);
+  }
+
+  // SQL for multiple inserts
   db.query(
-    "INSERT INTO transactions (user_id, amount, category, type, description, sub_category, payment_method_id) VALUES (?, ?, ?, ?, ?, ? ,?)",
-    [userId, amount, category, type, description, sub_category],
+    "INSERT INTO transactions (user_id, amount, category, type, description, sub_category, payment_method_id) VALUES ?",
+    [values],
     (err, result) => {
-      if (err)
-        return res
-          .status(500)
-          .json({ error: "Error al guardar la transacción" });
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Error saving transactions" });
+      }
       res.status(201).json({
-        message: "Transacción guardada",
-        transactionId: result.insertId,
+        message: "Transactions saved",
+        insertedCount: result.affectedRows,
       });
     }
   );

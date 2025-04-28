@@ -1,4 +1,6 @@
 const { Storage } = require("@google-cloud/storage");
+const express = require("express");
+const router = express.Router();
 
 // Instanciar el cliente (asegúrate de tener configurado GOOGLE_APPLICATION_CREDENTIALS)
 require("dotenv").config();
@@ -6,9 +8,9 @@ const storage = new Storage();
 const bucketName = "xddmegarata";
 
 // Ruta para obtener el link firmado
-app.get("/statement", async (req, res) => {
+router.get("/statement", async (req, res) => {
   try {
-    const { userId, month } = req.body;
+    const { userId, month } = req.query;
     if (!month) {
       return res.status(400).json({ message: "Falta el parámetro mes" });
     }
@@ -32,3 +34,5 @@ app.get("/statement", async (req, res) => {
     res.status(500).json({ message: "Error al generar el enlace" });
   }
 });
+
+module.exports = router;

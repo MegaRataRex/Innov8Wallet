@@ -9,6 +9,7 @@ const pdfManager = require("./storage/pdfManager");
 
 const app = express();
 app.use(cors()); // Permite peticiones desde el frontend
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Soporta JSON en requests
 
 // Usa las rutas definidas
@@ -21,7 +22,7 @@ app.use("/transactions", transactionsRoutes);
 app.use("/users", usersRoutes);
 app.use("/ask", mayaConvergence);
 app.use("/predict", spendingModel);
-app.use("/api");
+app.use("/api", pdfManager);
 
 // Inicia el servidor en el puerto que asigna App Engine o en el 8080
 const PORT = process.env.PORT || 8080;
