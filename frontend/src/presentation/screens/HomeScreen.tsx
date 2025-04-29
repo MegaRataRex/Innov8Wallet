@@ -35,6 +35,14 @@ interface Transaction {
   isIncoming: boolean
 }
 
+// Define financial data type
+interface FinancialData {
+  income: number
+  expenses: number
+  credit: number
+  debit: number
+}
+
 export const HomeScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [name, setName] = useState('');
@@ -43,9 +51,41 @@ export const HomeScreen = () => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
+  const [financialData] = useState<FinancialData>({
+    income: 20000,
+    expenses: 9913,
+    credit: 6763,
+    debit: 3150,
+  });
+  const [currentDate, setCurrentDate] = useState("")
   const scrollViewRef = useRef<ScrollView>(null);
   const transactionsScrollViewRef = useRef<ScrollView>(null);
 
+  useEffect(() => {
+    // Format current date in Spanish
+    const formatCurrentDate = () => {
+      const months = [
+        "enero",
+        "febrero",
+        "marzo",
+        "abril",
+        "mayo",
+        "junio",
+        "julio",
+        "agosto",
+        "septiembre",
+        "octubre",
+        "noviembre",
+        "diciembre",
+      ]
+      const now = new Date()
+      const day = now.getDate()
+      const month = months[now.getMonth()]
+      return `${day} ${month}`
+    }
+
+    setCurrentDate(formatCurrentDate());
+  }, []);
 
   useEffect(() => {
     const fetchName = async () => {
@@ -161,6 +201,16 @@ export const HomeScreen = () => {
     }
   };
 
+  const navigateToCardDetails = () => {
+    if (userCards.length > 0) {
+      navigation.navigate("CardDetailsScreen", {
+        cardType: userCards[0].cardType,
+        lastFour: userCards[0].last_four,
+        transactions: transactions,
+      });
+    }
+  };
+
   const renderTransactionItem = (item: Transaction) => (
     <TouchableOpacity
       key={item.id}
@@ -186,7 +236,6 @@ export const HomeScreen = () => {
       </View>
     </TouchableOpacity>
   );
-
   const ads = [
     {
       image: require('../../assets/images/ad-nomina.jpg'),
@@ -195,7 +244,7 @@ export const HomeScreen = () => {
         'Cambia tu Nómina a Banorte desde tu celular, en menos de 5 minutos de cotización y conoce todos los beneficios que obtienes al ser parte de nuestra comunidad de clientes exclusivos.',
     },
     {
-      image: require('../../assets/images/ad-hipotecario.jpg'),
+      image: require('../../assets/images/ad-hipotecario-copy.jpg'),
       title: 'TRANSFIERE TU CRÉDITO HIPOTECARIO A BANORTE',
       description:
         'te otorgamos un monto adicional para que uses como más te convenga. Mejor aún, disfruta de una Liquidez en transferir a Banorte el crédito hipotecario que tienes en otro Banco.',
@@ -277,7 +326,10 @@ export const HomeScreen = () => {
           <View style={localStyles.header}>
             <View style={localStyles.userInfo}>
               <View style={localStyles.avatarCircle}>
-                <Text style={localStyles.avatarText}>S</Text>
+              <Image
+                source={require('../../assets/icons/user.png')}
+                style={localStyles.avatarIcon}
+              />
               </View>
               <Text style={[localStyles.welcomeText]}>
                 BIENVENID@, {
@@ -298,16 +350,15 @@ export const HomeScreen = () => {
 
           <Text style={[localStyles.sectionTitle, styles.text]}>Cuentas</Text>
 
-          <View style={localStyles.cardContainer}>
-          {isLoading ? (
-            <Shimmer/>
-          ) : userCards.length > 0 ? (
-          <CardComponent cardType={userCards[0].cardType} lastFour={userCards[0].last_four}/>
-          ) : (
-          <Text style={styles.text}>No cards available</Text>
-          )}
-
-          </View>
+          <TouchableOpacity style={localStyles.cardContainer} onPress={navigateToCardDetails} activeOpacity={0.9}>
+            {isLoading ? (
+              <Shimmer />
+            ) : userCards.length > 0 ? (
+              <CardComponent cardType={userCards[0].cardType} lastFour={userCards[0].last_four} />
+            ) : (
+              <Text style={styles.text}>No cards available</Text>
+            )}
+          </TouchableOpacity>
 
           <View style={localStyles.accountInfo}>
             <Text style={[localStyles.accountLabel, styles.text]}>
@@ -317,7 +368,7 @@ export const HomeScreen = () => {
               Saldo actual
             </Text>
             <Text style={[styles.text, localStyles.balanceAmount]}>
-              $19,522.00
+              $19,523.00
             </Text>
           </View>
 
@@ -398,6 +449,66 @@ export const HomeScreen = () => {
                 {transactions.map((item) => renderTransactionItem(item))}
               </ScrollView>
             )}
+          </View>
+        </Container>
+
+                {/* Financial Future Section */}
+                <Container>
+          <View style={localStyles.transactionsHeader}>
+            <Text style={[localStyles.sectionTitle, styles.text]}>Tu futuro financiero</Text>
+            <TouchableOpacity onPress={() => console.log("View financial future")}>
+              <Image source={require("../../assets/icons/arrow-right.png")} style={localStyles.arrowIcon} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={localStyles.financialContainer}>
+            {/* Header with date */}
+            <View style={localStyles.financialHeader}>
+              <Text style={localStyles.financialSubtitle}>Analisis actual</Text>
+              <Text style={localStyles.financialDate}>{currentDate}</Text>
+            </View>
+
+            {/* Income */}
+            <View style={localStyles.financialItemContainer}>
+              <View style={localStyles.financialLabelRow}>
+                <Text style={localStyles.financialLabel}>Ingresos</Text>
+                <Text style={localStyles.financialAmount}>${financialData.income.toLocaleString()}</Text>
+              </View>
+              <View style={localStyles.progressBarContainer}>
+                <View style={[localStyles.progressBarFill, { width: "100%", backgroundColor: "#EA0A2A" }]} />
+              </View>
+            </View>
+
+            {/* Expenses */}
+            <View style={localStyles.financialItemContainer}>
+              <View style={localStyles.financialLabelRow}>
+                <Text style={localStyles.financialLabel}>Gastos</Text>
+                <Text style={localStyles.financialAmount}>${financialData.expenses.toLocaleString()}</Text>
+              </View>
+              <View style={[localStyles.progressBarContainer, { backgroundColor: "#EA0A2A" }]}>
+                <View
+                  style={[
+                    localStyles.progressBarFill,
+                    {
+                      width: `${(financialData.expenses / financialData.income) * 100}%`,
+                      backgroundColor: "#FF9800",
+                    },
+                  ]}
+                />
+              </View>
+            </View>
+
+            {/* Credit */}
+            <View style={localStyles.financialLabelRow}>
+              <Text style={localStyles.financialLabel}>Crédito</Text>
+              <Text style={localStyles.financialAmount}>${financialData.credit.toLocaleString()}</Text>
+            </View>
+
+            {/* Debit */}
+            <View style={localStyles.financialLabelRow}>
+              <Text style={localStyles.financialLabel}>Débito</Text>
+              <Text style={localStyles.financialAmount}>${financialData.debit.toLocaleString()}</Text>
+            </View>
           </View>
         </Container>
 
@@ -523,15 +634,14 @@ const localStyles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#EA0A2A',
+    //backgroundColor: '#EA0A2A',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
-  avatarText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+  avatarIcon: {
+    width: 40,
+    height: 40,
   },
   welcomeText: {
     fontSize: 18,
@@ -679,6 +789,56 @@ const localStyles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 20,
     color: "#666",
+  },
+
+  // Financial Future styles
+  financialContainer: {
+    marginBottom: 16,
+  },
+  financialHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  financialSubtitle: {
+    fontSize: 14,
+    color: "#000",
+    fontWeight: "500",
+  },
+  financialDate: {
+    fontSize: 14,
+    color: "#666",
+  },
+  financialItemContainer: {
+    marginBottom: 12,
+  },
+  financialLabelRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  financialLabel: {
+    fontSize: 14,
+    color: "#000",
+    fontWeight: "500",
+  },
+  financialAmount: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000",
+  },
+  progressBarContainer: {
+    height: 8,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 4,
+    overflow: "hidden",
+    marginBottom: 12,
+  },
+  progressBarFill: {
+    height: "100%",
+    borderRadius: 4,
   },
 
   // Modal styles
