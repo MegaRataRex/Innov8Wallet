@@ -3,7 +3,7 @@ const { categorizeSpending, subCategorize } = require("./categorize");
 const jwt = require("jsonwebtoken");
 
 exports.addTransaction = async (req, res) => {
-  let transactions = req.body.transactions; // Expecting an array of transactions
+  let transactions = req.body; // Expecting an array of transactions
 
   if (!Array.isArray(transactions)) {
     // If not an array, wrap single transaction into an array
@@ -22,23 +22,23 @@ exports.addTransaction = async (req, res) => {
       amount,
       category,
       type,
+      date,
       description,
       sub_category,
       payment_method_id,
+      beneficiary,
     } = tx;
 
     if (!amount || !type || !payment_method_id) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Amount, type, and payment_method_id are required for each transaction",
-        });
+      return res.status(400).json({
+        error:
+          "Amount, type, and payment_method_id are required for each transaction",
+      });
     }
 
     if (!category) {
-      category = categorizeSpending(description);
-      sub_category = subCategorize(description);
+      category = categorizeSpending(beneficiary);
+      sub_category = subCategorize(beneficiary);
     }
 
     values.push([
@@ -46,15 +46,17 @@ exports.addTransaction = async (req, res) => {
       amount,
       category,
       type,
+      date,
       description,
       sub_category,
       payment_method_id,
+      beneficiary,
     ]);
   }
 
   // SQL for multiple inserts
   db.query(
-    "INSERT INTO transactions (user_id, amount, category, type, description, sub_category, payment_method_id) VALUES ?",
+    "INSERT INTO transactions (user_id, amount, category, type, date, description, sub_category, payment_method_id, beneficiary) VALUES ?",
     [values],
     (err, result) => {
       if (err) {
