@@ -334,7 +334,7 @@ export const HomeScreen = () => {
                 Transferir
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={localStyles.actionItem}>
+            <TouchableOpacity style={localStyles.actionItem} onPress={() => navigation.navigate('WithdrawalScreen')}>
               <Image
                 source={require('../../assets/icons/withdrawal.png')}
                 style={localStyles.actionIcon}
@@ -465,6 +465,8 @@ export const HomeScreen = () => {
                           console.log(`Menu item clicked: ${item.label}`);
                           if (item.id === 'transferir') {
                             navigation.navigate('TransferScreen');
+                          }else if (item.id === "retiro") {
+                            navigation.navigate("WithdrawalScreen")
                           }
                         }}
                       >

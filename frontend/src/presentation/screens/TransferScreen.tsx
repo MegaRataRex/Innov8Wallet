@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,8 @@ import {
   StatusBar,
   Image,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, type RouteProp } from "@react-navigation/native"
+import type { RootStackParams } from "../navigation/Navigation"
 
 // Define a type for the contact object
 interface Contact {
@@ -22,7 +23,7 @@ interface Contact {
   }
 
 // Mock data for contacts
-const CONTACTS: Contact[] = [
+const INITIAL_CONTACTS: Contact[] = [
   { id: '1', name: 'Dulce', bank: 'NU MEXICO', accountType: 'Debito', accountNumber: '****2339' },
   { id: '2', name: 'Emiliano', bank: 'BBVA MEXICO', accountType: 'Debito', accountNumber: '****2339' },
   { id: '3', name: 'Manuel Eduardo', bank: 'BBVA MEXICO', accountType: 'Debito', accountNumber: '****3142' },
@@ -31,17 +32,37 @@ const CONTACTS: Contact[] = [
   { id: '6', name: 'Zendaya', bank: 'Banorte', accountType: 'Debito', accountNumber: '****2312' },
 ];
 
+type TransferScreenRouteProp = RouteProp<RootStackParams, "TransferScreen">
+
 export const TransferScreen = () => {
   const navigation = useNavigation<any>();
+  const route = useRoute<TransferScreenRouteProp>()
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredContacts, setFilteredContacts] = useState<Contact[]>(CONTACTS);
+  const [contacts, setContacts] = useState<Contact[]>(INITIAL_CONTACTS)
+  const [filteredContacts, setFilteredContacts] = useState<Contact[]>(INITIAL_CONTACTS)
+
+  // Check if a new contact was added
+  useEffect(() => {
+    if (route.params?.newContact) {
+      const newContact = route.params.newContact
+      // Add the new contact to the contacts list if it doesn't already exist
+      if (!contacts.some((contact) => contact.id === newContact.id)) {
+        const updatedContacts = [newContact, ...contacts]
+        setContacts(updatedContacts)
+        setFilteredContacts(updatedContacts)
+      }
+      // Clear the route params to prevent adding the same contact multiple times
+      navigation.setParams({ newContact: undefined })
+    }
+  }, [route.params?.newContact, contacts, navigation])
+
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);
     if (text.trim() === '') {
-      setFilteredContacts(CONTACTS);
+      setFilteredContacts(contacts);
     } else {
-      const filtered = CONTACTS.filter(
+      const filtered = contacts.filter(
         contact =>
           contact.name.toLowerCase().includes(text.toLowerCase()) ||
           contact.bank.toLowerCase().includes(text.toLowerCase())
@@ -53,8 +74,6 @@ export const TransferScreen = () => {
   const handleContactPress = (contact: Contact) => {
     // Navigate to transfer amount screen or handle the transfer process
     navigation.navigate('TransferAmountScreen', { contact });
-    //console.log(`Selected contact: ${contact.name}`);
-    // Example: navigation.navigate('TransferAmount', { contact });
   };
 
   const renderContactItem = ({ item }: { item: Contact }) => (
@@ -110,6 +129,18 @@ export const TransferScreen = () => {
           placeholderTextColor="#999"
         />
       </View>
+      {/* Add Contact Button */}
+      <TouchableOpacity
+        style={styles.addContactButton}
+        onPress={() => {
+          navigation.navigate("AddContactScreen")
+        }}
+      >
+        <View style={styles.avatarContainer}>
+          <Image source={require("../../assets/icons/profile-add.png")} style={styles.avatar} />
+        </View>
+        <Text style={styles.addContactText}>Agregar contacto</Text>
+      </TouchableOpacity>
       {/* Contacts List */}
       <FlatList
         data={filteredContacts}
@@ -211,5 +242,20 @@ const styles = StyleSheet.create({
   accountInfo: {
     fontSize: 14,
     color: '#666',
+  },
+  addContactButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFEBEE",
+    borderRadius: 20,
+    marginHorizontal: 16,
+    padding: 12,
+    marginBottom: 16,
+  },
+  addContactText: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#EA0A2A",
+    marginLeft: 8,
   },
 });

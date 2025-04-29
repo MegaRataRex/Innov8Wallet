@@ -84,14 +84,13 @@ const LoginScreen = () => {
         <Image
           source={require("../../assets/icons/arc-gradient.png")}
           style={{
-            width: screenWidth * .9,
-            height: screenHeight * .95,
             position: "absolute",
-            right: -screenWidth * 0.0,
-            top: screenHeight * 0.3,
-            //tintColor: "#ffb3b3", // Light red tint
             opacity: 0.6,
             resizeMode: "contain",
+            width: screenWidth * 0.9,
+            height: screenHeight * 0.95,
+            right: -screenWidth * 0.0,
+            top: screenHeight * 0.3,
           }}
         />
       </View>
