@@ -15,6 +15,7 @@ import {Container} from '../../components/Container';
 import {CustomBottomNav} from '../../components/CustomBottomNav';
 import {AdCard} from '../../components/AdCard';
 import Shimmer from '../effects/shimmer';
+import { DebtGraph } from "../../components/DebtGraph"
 
 import { useCards } from '../../hooks/useCards';
 import { CardComponent } from '../../components/CardComponent';
@@ -43,6 +44,15 @@ interface FinancialData {
   debit: number
 }
 
+// Define debt item type
+interface DebtItem {
+  id: string
+  name: string
+  amount: number
+  color: string
+  category: "creditCard" | "loan"
+}
+
 export const HomeScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [name, setName] = useState('');
@@ -57,9 +67,38 @@ export const HomeScreen = () => {
     credit: 6763,
     debit: 3150,
   });
+
+  // Debt data
+  const [debtData, _setDebtData] = useState<DebtItem[]>([
+    {
+      id: "oneup",
+      name: "Banorte One Up",
+      amount: 4523,
+      color: "#FFD700", // Yellow
+      category: "creditCard",
+    },
+    {
+      id: "mujer",
+      name: "Mujer Banorte",
+      amount: 2250,
+      color: "#9C27B0", // Purple
+      category: "creditCard",
+    },
+    {
+      id: "auto",
+      name: "Auto estreno Banorte",
+      amount: 6550,
+      color: "#EA0A2A", // Red
+      category: "loan",
+    },
+  ]);
+
   const [currentDate, setCurrentDate] = useState("")
   const scrollViewRef = useRef<ScrollView>(null);
   const transactionsScrollViewRef = useRef<ScrollView>(null);
+
+  // Calculate total debt
+  const totalDebt = debtData.reduce((total, item) => total + item.amount, 0)
 
   useEffect(() => {
     // Format current date in Spanish
@@ -340,7 +379,10 @@ export const HomeScreen = () => {
                   </Text>)}
               </Text>
             </View>
-            <TouchableOpacity style={localStyles.notificationButton}>
+            <TouchableOpacity
+              style={localStyles.notificationButton}
+              onPress={() => navigation.navigate("NotificationsScreen")}
+            >
               <Image
                 source={require('../../assets/icons/bell.png')}
                 style={localStyles.actionIcon}
@@ -429,7 +471,7 @@ export const HomeScreen = () => {
         <Container>
           <View style={localStyles.transactionsHeader}>
             <Text style={[localStyles.sectionTitle, styles.text]}>Mis ultimos movimientos</Text>
-            <TouchableOpacity onPress={() => console.log("View all transactions")}>
+            <TouchableOpacity onPress={navigateToCardDetails}>
               <Image source={require("../../assets/icons/arrow-right.png")} style={localStyles.arrowIcon} />
             </TouchableOpacity>
           </View>
@@ -456,7 +498,7 @@ export const HomeScreen = () => {
                 <Container>
           <View style={localStyles.transactionsHeader}>
             <Text style={[localStyles.sectionTitle, styles.text]}>Tu futuro financiero</Text>
-            <TouchableOpacity onPress={() => console.log("View financial future")}>
+            <TouchableOpacity onPress={() => navigation.navigate("FinancialFutureScreen")}>
               <Image source={require("../../assets/icons/arrow-right.png")} style={localStyles.arrowIcon} />
             </TouchableOpacity>
           </View>
@@ -512,6 +554,60 @@ export const HomeScreen = () => {
           </View>
         </Container>
 
+        {/* Debt Zero Section */}
+        <Container>
+          <View style={localStyles.transactionsHeader}>
+            <Text style={[localStyles.sectionTitle, styles.text]}>Deuda cero</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("DebtZeroScreen")}>
+              <Image source={require("../../assets/icons/arrow-right.png")} style={localStyles.arrowIcon} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={localStyles.financialContainer}>
+            {/* Header with date */}
+            <View style={localStyles.financialHeader}>
+              <Text style={localStyles.financialSubtitle}>Deuda actual</Text>
+              <View style={{ width: 20 }} />
+              <Text style={localStyles.financialDate}>{currentDate}</Text>
+            </View>
+
+            {/* Credit Cards Section */}
+            <Text style={localStyles.debtCategoryTitle}>TDC'S</Text>
+
+            {debtData
+              .filter((item) => item.category === "creditCard")
+              .map((item) => (
+                <View key={item.id} style={localStyles.debtItemRow}>
+                  <View style={localStyles.debtItemLeft}>
+                    <View style={[localStyles.debtColorIndicator, { backgroundColor: item.color }]} />
+                    <Text style={localStyles.debtItemName}>{item.name}</Text>
+                  </View>
+                  <Text style={localStyles.debtItemAmount}>${item.amount.toLocaleString()}</Text>
+                </View>
+              ))}
+
+            {/* Loans Section */}
+            <Text style={localStyles.debtCategoryTitle}>Prestamos</Text>
+
+            {debtData
+              .filter((item) => item.category === "loan")
+              .map((item) => (
+                <View key={item.id} style={localStyles.debtItemRow}>
+                  <View style={localStyles.debtItemLeft}>
+                    <View style={[localStyles.debtColorIndicator, { backgroundColor: item.color }]} />
+                    <Text style={localStyles.debtItemName}>{item.name}</Text>
+                  </View>
+                  <Text style={localStyles.debtItemAmount}>${item.amount.toLocaleString()}</Text>
+                </View>
+              ))}
+
+            {/* Debt Graph */}
+            <View style={localStyles.debtGraphContainer}>
+              <DebtGraph data={debtData} totalDebt={totalDebt} />
+            </View>
+          </View>
+        </Container>
+
         <View style={localStyles.adsSection}>
           <ScrollView
             horizontal
@@ -560,17 +656,11 @@ export const HomeScreen = () => {
                   {section.title ? (
                     <Text style={localStyles.sectionTitleMenu}>{section.title}</Text>
                   ) : null}
-                  <View style={[
-                    localStyles.menuItemsGrid,
-                    section.itemsPerRow === 2 && localStyles.twoItemsRow,
-                  ]}>
+                    <View style={[localStyles.menuItemsGrid, section.itemsPerRow === 2 && localStyles.twoItemsRow]}>
                     {section.items.map((item) => (
                       <TouchableOpacity
                         key={item.id}
-                        style={[
-                          localStyles.menuItem,
-                          section.itemsPerRow === 2 && localStyles.menuItemHalfWidth,
-                        ]}
+                        style={[localStyles.menuItem, section.itemsPerRow === 2 && localStyles.menuItemHalfWidth]}
                         onPress={() => {
                           toggleMenu();
                           console.log(`Menu item clicked: ${item.label}`);
@@ -841,6 +931,46 @@ const localStyles = StyleSheet.create({
     borderRadius: 4,
   },
 
+  // Debt Zero styles
+  debtCategoryTitle: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000",
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  debtItemRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  debtItemLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  debtColorIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 8,
+  },
+  debtItemName: {
+    fontSize: 14,
+    color: "#000",
+  },
+  debtItemAmount: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000",
+  },
+  debtGraphContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    marginBottom: 10,
+  },
+
   // Modal styles
   modalOverlay: {
     flex: 1,
@@ -907,7 +1037,7 @@ const localStyles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   twoItemsRow: {
-    justifyContent: 'center', // Center the items in the row
+    justifyContent: "center", // Center the items in the row
     paddingHorizontal: 20, // Add some padding to space them out
   },
   menuItem: {
@@ -916,9 +1046,10 @@ const localStyles = StyleSheet.create({
     marginBottom: 12,
   },
   menuItemHalfWidth: {
-    width: '40%', // Wider for 2 items per row
-    marginHorizontal: '5%', // Add horizontal margin for spacing
+    width: "40%", // Wider for 2 items per row
+    marginHorizontal: "5%", // Add horizontal margin for spacing
   },
+
   menuIcon: {
     width: 30,
     height: 30,
