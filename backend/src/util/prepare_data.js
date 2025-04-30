@@ -26,11 +26,11 @@ async function prepareDataMonth(userId, category, paymentId) {
       CASE WHEN WEEKDAY(date) IN (5,6) THEN 1 ELSE 0 END AS is_weekend,
       SUM(amount) AS total_spent
     FROM transactions 
-    WHERE user_id = ? 
+    WHERE userId = ? 
     ${stringSuffix} 
     GROUP BY YEAR(date), MONTH(date), DAY(date), WEEKDAY(date)
     ORDER BY date DESC`;
-    const [historicalTransactions] = db.query(queryString, params);
+    const historicalTransactions = db.query(queryString, params);
 
     const sortedData = historicalTransactions.sort(
       (a, b) => a.amount - b.amount
