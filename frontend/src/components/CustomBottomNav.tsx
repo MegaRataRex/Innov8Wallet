@@ -9,7 +9,8 @@ interface CustomBottomNavProps {
 type RootStackParamList = {
   Home: undefined;
   Chat: undefined;
-  // Add other screen names and their params here
+  FinancialFutureScreen: undefined
+  NotificationsScreen: undefined
 };
 
 export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => {
@@ -23,7 +24,7 @@ export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => 
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.tabButton}
-        onPress={() => onPress('Home')}
+        onPress={() => navigation.navigate('Home')}
       >
         <Image
           source={require('../assets/icons/home.png')}
@@ -48,7 +49,7 @@ export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => 
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.tabButton}
-        onPress={() => onPress('Stats')}
+        onPress={() => navigation.navigate('FinancialFutureScreen')}
       >
         <Image
           source={require('../assets/icons/stats.png')}
@@ -57,7 +58,7 @@ export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => 
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.tabButton}
-        onPress={() => onPress('SMS')}
+        onPress={() => navigation.navigate('NotificationsScreen')}
       >
         <Image
           source={require('../assets/icons/sms.png')}

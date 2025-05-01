@@ -1,16 +1,20 @@
-import { createStackNavigator } from "@react-navigation/stack"
-import { HomeScreen } from "../screens/HomeScreen"
-import LoginScreen from "../screens/LoginScreen"
-import { ChatScreen } from "../screens/ChatScreen"
-import { TransferScreen } from "../screens/TransferScreen"
-import { TransferAmountScreen } from "../screens/TransferAmountScreen"
-import { TransferConfirmationScreen } from "../screens/TransferConfirmationScreen"
-import { TransferSuccessScreen } from "../screens/TransferSuccessScreen"
-import { WithdrawalScreen } from "../screens/WithdrawalScreen"
-import { WithdrawalConfirmationScreen } from "../screens/WithdrawalConfirmationScreen"
-import { AddContactScreen } from "../screens/AddContactScreen"
-import { ContactDetailsScreen } from "../screens/ContactDetailsScreen"
-import { CardDetailsScreen } from "../screens/CardDetailsScreen"
+import { createStackNavigator } from '@react-navigation/stack';
+import { HomeScreen } from '../screens/HomeScreen';
+import LoginScreen from '../screens/LoginScreen';
+import { ChatScreen } from '../screens/ChatScreen';
+import { TransferScreen } from '../screens/TransferScreen';
+import { TransferAmountScreen } from '../screens/TransferAmountScreen';
+import { TransferConfirmationScreen } from '../screens/TransferConfirmationScreen';
+import { TransferSuccessScreen } from '../screens/TransferSuccessScreen';
+import { WithdrawalScreen } from '../screens/WithdrawalScreen';
+import { WithdrawalConfirmationScreen } from '../screens/WithdrawalConfirmationScreen';
+import { AddContactScreen } from '../screens/AddContactScreen';
+import { ContactDetailsScreen } from '../screens/ContactDetailsScreen';
+import { CardDetailsScreen } from '../screens/CardDetailsScreen';
+import { FinancialFutureScreen } from '../screens/FinancialFutureScreen';
+import { DebtZeroScreen } from '../screens/DebtZeroScreen';
+import { NotificationsScreen } from '../screens/NotificationsScreen';
+import { MyAccountScreen } from '../screens/MyAccountScreen';
 
 export type RootStackParams = {
   Home: undefined
@@ -28,6 +32,9 @@ export type RootStackParams = {
       isIncoming: boolean
     }>
   }
+  FinancialFutureScreen: undefined
+  DebtZeroScreen: undefined
+  NotificationsScreen: undefined
   TransferScreen:
     | {
         newContact?: {
@@ -80,6 +87,7 @@ export type RootStackParams = {
     }
     amount: number
   }
+  MyAccountScreen: undefined
 }
 
 const Stack = createStackNavigator<RootStackParams>();
@@ -91,6 +99,9 @@ export const Navigation = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
       <Stack.Screen name="CardDetailsScreen" component={CardDetailsScreen} />
+      <Stack.Screen name="FinancialFutureScreen" component={FinancialFutureScreen} />
+      <Stack.Screen name="DebtZeroScreen" component={DebtZeroScreen} />
+      <Stack.Screen name="NotificationsScreen" component={NotificationsScreen} />
       <Stack.Screen name="TransferScreen" component={TransferScreen} />
       <Stack.Screen name="WithdrawalScreen" component={WithdrawalScreen} />
       <Stack.Screen name="WithdrawalConfirmationScreen" component={WithdrawalConfirmationScreen} />
@@ -99,6 +110,7 @@ export const Navigation = () => {
       <Stack.Screen name="TransferAmountScreen" component={TransferAmountScreen} />
       <Stack.Screen name="TransferConfirmationScreen" component={TransferConfirmationScreen} />
       <Stack.Screen name="TransferSuccessScreen" component={TransferSuccessScreen} />
+      <Stack.Screen name="MyAccountScreen" component={MyAccountScreen} />
     </Stack.Navigator>
   );
 };
