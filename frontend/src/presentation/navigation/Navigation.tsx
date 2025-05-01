@@ -14,6 +14,7 @@ import { CardDetailsScreen } from '../screens/CardDetailsScreen';
 import { FinancialFutureScreen } from '../screens/FinancialFutureScreen';
 import { DebtZeroScreen } from '../screens/DebtZeroScreen';
 import { NotificationsScreen } from '../screens/NotificationsScreen';
+import { MyAccountScreen } from '../screens/MyAccountScreen';
 
 export type RootStackParams = {
   Home: undefined
@@ -86,6 +87,7 @@ export type RootStackParams = {
     }
     amount: number
   }
+  MyAccountScreen: undefined
 }
 
 const Stack = createStackNavigator<RootStackParams>();
@@ -108,6 +110,7 @@ export const Navigation = () => {
       <Stack.Screen name="TransferAmountScreen" component={TransferAmountScreen} />
       <Stack.Screen name="TransferConfirmationScreen" component={TransferConfirmationScreen} />
       <Stack.Screen name="TransferSuccessScreen" component={TransferSuccessScreen} />
+      <Stack.Screen name="MyAccountScreen" component={MyAccountScreen} />
     </Stack.Navigator>
   );
 };

@@ -20,6 +20,8 @@ import { useNavigation } from "@react-navigation/native"
 import VisaCardSVG from "../../assets/svgs/VisaCardSVG"
 import OneUpCardSVG from "../../assets/svgs/OneUpCardSVG"
 import WomanCardSVG from "../../assets/svgs/WomanCardSVG"
+import CardDetailsModal from "../../components/CardDetailsModal"
+import MenuModal from "../../components/MenuModal"
 
 // Define transaction type
 interface Transaction {
@@ -59,6 +61,8 @@ export const CardDetailsScreen: React.FC<CardDetailsScreenProps> = ({ route }) =
   const navigation = useNavigation()
   const [activeCardIndex, setActiveCardIndex] = useState(1)
   const [paymentInfoExpanded, setPaymentInfoExpanded] = useState(true)
+  const [cardDetailsModalVisible, setCardDetailsModalVisible] = useState(false)
+  const [menuVisible, setMenuVisible] = useState(false)
   const scrollX = useRef(new Animated.Value(0)).current
   const flatListRef = useRef<FlatList>(null)
 
@@ -143,9 +147,13 @@ export const CardDetailsScreen: React.FC<CardDetailsScreenProps> = ({ route }) =
 
   const renderCardItem = ({ item }: ListRenderItemInfo<Card>) => {
     return (
-      <View style={localStyles.cardItem}>
+      <TouchableOpacity
+        style={localStyles.cardItem}
+        onPress={() => setCardDetailsModalVisible(true)}
+        activeOpacity={0.8}
+      >
         <View style={localStyles.cardWrapper}>{renderCardType(item.cardType)}</View>
-      </View>
+      </TouchableOpacity>
     )
   }
 
@@ -162,6 +170,10 @@ export const CardDetailsScreen: React.FC<CardDetailsScreenProps> = ({ route }) =
 
   const togglePaymentInfo = () => {
     setPaymentInfoExpanded(!paymentInfoExpanded)
+  }
+
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible)
   }
 
   const renderCardInfo = () => {
@@ -224,7 +236,7 @@ export const CardDetailsScreen: React.FC<CardDetailsScreenProps> = ({ route }) =
               <Image source={require("../../assets/icons/applePay.png")} style={localStyles.creditActionIcon} />
               <Text style={localStyles.creditActionText}>Agregar...</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={localStyles.creditActionItem}>
+            <TouchableOpacity style={localStyles.creditActionItem} onPress={() => setCardDetailsModalVisible(true)}>
               <Image source={require("../../assets/icons/virtual-card.png")} style={localStyles.creditActionIcon} />
               <Text style={localStyles.creditActionText}>Tarjeta...</Text>
             </TouchableOpacity>
@@ -326,7 +338,7 @@ export const CardDetailsScreen: React.FC<CardDetailsScreenProps> = ({ route }) =
               />
               <Text style={localStyles.actionText}>Estado de{"\n"}cuenta</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={localStyles.actionItem}>
+            <TouchableOpacity style={localStyles.actionItem} onPress={toggleMenu}>
               <Image
                 source={require("../../assets/icons/more.png")}
                 style={localStyles.actionIcon}
@@ -358,6 +370,8 @@ export const CardDetailsScreen: React.FC<CardDetailsScreenProps> = ({ route }) =
       </View>
     )
   }
+
+  const activeCard = cards[activeCardIndex]
 
   return (
     <SafeAreaView style={styles.background}>
@@ -426,6 +440,23 @@ export const CardDetailsScreen: React.FC<CardDetailsScreenProps> = ({ route }) =
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Card Details Modal */}
+      <CardDetailsModal
+        visible={cardDetailsModalVisible}
+        onClose={() => setCardDetailsModalVisible(false)}
+        cardType={activeCard.cardType}
+        lastFour={activeCard.lastFour}
+        isCredit={activeCard.isCredit}
+        cardColor={activeCard.cardColor || "#EA0A2A"}
+      />
+
+      {/* Menu Modal */}
+      <MenuModal
+        visible={menuVisible}
+        onClose={toggleMenu}
+        userName="Usuario" // You might want to pass the actual user name here
+      />
     </SafeAreaView>
   )
 }
