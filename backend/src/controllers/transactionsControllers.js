@@ -72,7 +72,7 @@ exports.addTransaction = async (req, res) => {
 };
 
 exports.getTransactions = async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.query.userId;
 
   db.query(
     "SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC",
