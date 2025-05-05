@@ -50,6 +50,10 @@ async function prepareDataMonth(userId, category, paymentId, callback) {
   }
 }
 
+module.exports = {
+  prepareDataMonth,
+};
+
 /*
 async function getDailyFinancialData(date, userId) {
   try {
