@@ -24,7 +24,7 @@ interface FinancialData {
 }
 
 export const FinancialFutureScreen = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation<any>();
 
   // Financial data state
   const [financialData] = useState<FinancialData>({
@@ -68,14 +68,14 @@ export const FinancialFutureScreen = () => {
   })
 
   // Calculate total expenses from categories
-  const totalCategoryExpenses = financialData.categories.reduce((total, category) => total + category.amount, 0)
+  const totalCategoryExpenses = financialData.categories.reduce((total, category) => total + category.amount, 0);
 
   return (
     <SafeAreaView style={styles.background}>
       <ScrollView contentContainerStyle={localStyles.scrollContent}>
         {/* Header */}
         <View style={localStyles.header}>
-          <TouchableOpacity style={localStyles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={localStyles.backButton} onPress={() => navigation.navigate('Home')}>
             <Image source={require("../../assets/icons/arrow-left-icon.png")} style={localStyles.backIcon} />
           </TouchableOpacity>
           <Text style={localStyles.headerTitle}>Tu futuro financiero</Text>
@@ -186,11 +186,11 @@ export const FinancialFutureScreen = () => {
             <Text style={localStyles.bottomButtonText}>Generar{"\n"}Análisis</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={localStyles.bottomButton}>
+          <TouchableOpacity style={localStyles.bottomButton} onPress={()=> navigation.navigate('Ahorro360Screen')}>
             <View style={localStyles.bottomButtonIconContainer}>
-              <Image source={require("../../assets/icons/flag.png")} style={localStyles.bottomButtonIcon} />
+              <Image source={require("../../assets/icons/ahorro.png")} style={localStyles.bottomButtonIcon} />
             </View>
-            <Text style={localStyles.bottomButtonText}>Establecer{"\n"}meta</Text>
+            <Text style={localStyles.bottomButtonText}>Ahorro{"\n"}360</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

@@ -25,7 +25,7 @@ interface CreditItem {
 }
 
 export const DebtZeroScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   // Debt data
   const [debtData] = useState<DebtItem[]>([
@@ -173,11 +173,11 @@ export const DebtZeroScreen = () => {
             <Text style={localStyles.bottomButtonText}>Generar{"\n"}Análisis</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={localStyles.bottomButton}>
+          <TouchableOpacity style={localStyles.bottomButton} onPress={()=> navigation.navigate('Ahorro360Screen')}>
             <View style={localStyles.bottomButtonIconContainer}>
-              <Image source={require("../../assets/icons/flag.png")} style={localStyles.bottomButtonIcon} />
+              <Image source={require("../../assets/icons/ahorro.png")} style={localStyles.bottomButtonIcon} />
             </View>
-            <Text style={localStyles.bottomButtonText}>Establecer{"\n"}meta</Text>
+            <Text style={localStyles.bottomButtonText}>Ahorro{"\n"}360</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
