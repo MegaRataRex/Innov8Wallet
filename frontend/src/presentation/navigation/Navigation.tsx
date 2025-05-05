@@ -15,6 +15,10 @@ import { FinancialFutureScreen } from '../screens/FinancialFutureScreen';
 import { DebtZeroScreen } from '../screens/DebtZeroScreen';
 import { NotificationsScreen } from '../screens/NotificationsScreen';
 import { MyAccountScreen } from '../screens/MyAccountScreen';
+import { Ahorro360Screen } from '../screens/Ahorro360Screen';
+import { CreateSavingsBoxScreen } from "../screens/CreateSavingsBoxScreen"
+import { SavingsAmountScreen } from "../screens/SavingsAmountScreen"
+import { SavingsPlanConfirmationScreen } from "../screens/SavingsPlanConfirmationScreen"
 
 export type RootStackParams = {
   Home: undefined
@@ -88,6 +92,22 @@ export type RootStackParams = {
     amount: number
   }
   MyAccountScreen: undefined
+  Ahorro360Screen: {
+    newSavingsBox?: {
+      name: string
+      targetAmount: number
+      monthlySavings: number
+      targetDate: string
+    }
+  }
+  CreateSavingsBoxScreen: undefined
+  SavingsAmountScreen: {
+    savingsBoxName: string
+  }
+  SavingsPlanConfirmationScreen: {
+    savingsBoxName: string
+    targetAmount: number
+  }
 }
 
 const Stack = createStackNavigator<RootStackParams>();
@@ -111,6 +131,10 @@ export const Navigation = () => {
       <Stack.Screen name="TransferConfirmationScreen" component={TransferConfirmationScreen} />
       <Stack.Screen name="TransferSuccessScreen" component={TransferSuccessScreen} />
       <Stack.Screen name="MyAccountScreen" component={MyAccountScreen} />
+      <Stack.Screen name="Ahorro360Screen" component={Ahorro360Screen} />
+      <Stack.Screen name="CreateSavingsBoxScreen" component={CreateSavingsBoxScreen} />
+      <Stack.Screen name="SavingsAmountScreen" component={SavingsAmountScreen} />
+      <Stack.Screen name="SavingsPlanConfirmationScreen" component={SavingsPlanConfirmationScreen} />
     </Stack.Navigator>
   );
 };

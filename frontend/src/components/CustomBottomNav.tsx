@@ -11,9 +11,10 @@ type RootStackParamList = {
   Chat: undefined;
   FinancialFutureScreen: undefined
   NotificationsScreen: undefined
+  Ahorro360Screen: undefined
 };
 
-export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => {
+export const CustomBottomNav: React.FC<CustomBottomNavProps> = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const handleChatPress = () => {
@@ -33,10 +34,10 @@ export const CustomBottomNav: React.FC<CustomBottomNavProps> = ({ onPress }) => 
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.tabButton}
-        onPress={() => onPress('Calendar')}
+        onPress={() => navigation.navigate('Ahorro360Screen')}
       >
         <Image
-          source={require('../assets/icons/calendar.png')}
+          source={require('../assets/icons/ahorro.png')}
           style={styles.icon}
         />
       </TouchableOpacity>
