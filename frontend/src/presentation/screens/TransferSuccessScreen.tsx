@@ -1,159 +1,188 @@
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Image } from 'react-native';
-import { useNavigation} from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
-import type { RootStackParams } from '../navigation/Navigation';
+"use client"
 
-// Define the route params type
-//type TransferSuccessScreenRouteProp = RouteProp<RootStackParams, "TransferSuccessScreen">
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Image } from "react-native"
+import { useNavigation, useRoute, type RouteProp } from "@react-navigation/native"
+import type { StackNavigationProp } from "@react-navigation/stack"
+import type { RootStackParams } from "../navigation/Navigation"
 
-type TransferSuccessScreenNavigationProp = StackNavigationProp<RootStackParams, 'TransferSuccessScreen'>
+// Use the RootStackParams from your Navigation file
+type TransferSuccessScreenRouteProp = RouteProp<RootStackParams, "TransferSuccessScreen">
+type TransferSuccessScreenNavigationProp = StackNavigationProp<RootStackParams, "TransferSuccessScreen">
 
 export const TransferSuccessScreen = () => {
-  const navigation = useNavigation<TransferSuccessScreenNavigationProp>();
-  //const route = useRoute<TransferSuccessScreenRouteProp>()
+  const navigation = useNavigation<TransferSuccessScreenNavigationProp>()
+  const route = useRoute<TransferSuccessScreenRouteProp>()
+  const { contact, amount } = route.params
 
-  const handleViewReceipt = () => {
-    // In a real app, this would navigate to a receipt screen or open a PDF
-    console.log('View receipt');
-  };
+  const formatCurrency = (value: number) => {
+    return `$${value.toFixed(2)}`
+  }
 
-  const handleFinish = () => {
-    // Navigate back to the home screen
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Home' }],
-    });
-  };
+  const handleDone = () => {
+    // Navigate back to home screen
+    navigation.navigate("Home")
+  }
+
+  const handleNewTransfer = () => {
+    // Navigate back to transfer screen
+    navigation.navigate("TransferScreen")
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
-          <Image source={require('../../assets/icons/arrow-left-icon.png')} style={styles.backArrow} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Transferir</Text>
-        <View style={styles.placeholder} />
+      {/* Success Icon */}
+      <View style={styles.successIconContainer}>
+        <Image
+          source={require("../../assets/icons/verify.png")} // Replace with your success icon
+          style={styles.successIcon}
+        />
       </View>
 
-      {/* Success Content */}
-      <View style={styles.contentContainer}>
-        <Text style={styles.successTitle}>LISTO</Text>
-        <Text style={styles.successMessage}>Se a realizado la operación con éxito</Text>
+      {/* Success Message */}
+      <Text style={styles.successTitle}>¡Transferencia exitosa!</Text>
+      <Text style={styles.successMessage}>
+        Has transferido {formatCurrency(amount)} a {contact.name}
+      </Text>
 
-        {/* Success Icon */}
-        <View style={styles.iconContainer}>
-            <View style={styles.successIconInner}>
-              <Image source={require('../../assets/icons/verify.png')} style={styles.checkIcon} />
-          </View>
+      {/* Transfer Details */}
+      <View style={styles.detailsContainer}>
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Beneficiario</Text>
+          <Text style={styles.detailValue}>{contact.name}</Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Banco</Text>
+          <Text style={styles.detailValue}>{contact.bank}</Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Cuenta</Text>
+          <Text style={styles.detailValue}>{contact.accountNumber}</Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Monto</Text>
+          <Text style={styles.detailValue}>{formatCurrency(amount)}</Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Fecha</Text>
+          <Text style={styles.detailValue}>{new Date().toLocaleDateString()}</Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Hora</Text>
+          <Text style={styles.detailValue}>{new Date().toLocaleTimeString()}</Text>
         </View>
       </View>
 
-      {/* Bottom Actions */}
-      <View style={styles.bottomContainer}>
-        <TouchableOpacity style={styles.viewReceiptButton} onPress={handleViewReceipt}>
-          <Text style={styles.viewReceiptText}>Ver recibo</Text>
+      {/* Action Buttons */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.newTransferButton} onPress={handleNewTransfer}>
+          <Text style={styles.newTransferButtonText}>NUEVA TRANSFERENCIA</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.confirmButton} onPress={handleFinish}>
-          <Text style={styles.confirmButtonText}>CONFIRMAR</Text>
+        <TouchableOpacity style={styles.doneButton} onPress={handleDone}>
+          <Text style={styles.doneButtonText}>FINALIZAR</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    padding: 16,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  successIconContainer: {
+    marginTop: 40,
+    marginBottom: 24,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backArrow: {
-    width: 24,
-    height: 24,
-    tintColor: '#EA0A2A',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#000',
-  },
-  placeholder: {
-    width: 40,
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 40,
+  successIcon: {
+    width: 80,
+    height: 80,
+    tintColor: "#28a745",
   },
   successTitle: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
     marginBottom: 8,
   },
   successMessage: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 60,
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 32,
   },
-  iconContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    maxHeight: 200,
+  detailsContainer: {
+    width: "100%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    padding: 16,
+    marginBottom: 32,
   },
-  successIconInner: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+  detailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
   },
-  checkIcon: {
-    width: 100,
-    height: 100,
+  detailLabel: {
+    fontSize: 14,
+    color: "#333",
   },
-  bottomContainer: {
-    padding: 24,
-    alignItems: 'center',
+  detailValue: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000",
+    textAlign: "right",
   },
-  viewReceiptButton: {
+  buttonContainer: {
+    width: "100%",
+    marginTop: "auto",
     marginBottom: 16,
   },
-  viewReceiptText: {
-    fontSize: 16,
-    color: '#EA0A2A',
-    textDecorationLine: 'none',
-  },
-  confirmButton: {
-    backgroundColor: '#EA0A2A',
+  newTransferButton: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#EA0A2A",
     borderRadius: 28,
     height: 56,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
   },
-  confirmButtonText: {
-    color: '#FFFFFF',
+  newTransferButtonText: {
+    color: "#EA0A2A",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
-});
+  doneButton: {
+    backgroundColor: "#EA0A2A",
+    borderRadius: 28,
+    height: 56,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  doneButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+})
+
+export default TransferSuccessScreen
