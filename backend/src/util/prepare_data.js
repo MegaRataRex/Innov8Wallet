@@ -2,9 +2,8 @@ const db = require("../config/db");
 const { isHoliday } = require("./holidayAPI");
 
 //prepara los datos para su uso en ../models/spendingModel.js
-async function prepareDataMonth(userId, category, paymentId, callback) {
-  //añade sufijos a los querys para no tener que hacer un chingo de condiciones
-  try {
+function prepareDataMonth(userId, category, paymentId) {
+  return new Promise((resolve, reject) => {
     let stringSuffix = "";
     let params = [userId];
 
@@ -17,43 +16,39 @@ async function prepareDataMonth(userId, category, paymentId, callback) {
       params.push(category);
     }
 
-    queryString = `
-    SELECT 
-      YEAR(date) AS year,
-      MONTH(date) AS month,
-      DAY(date) AS day,
-      WEEKDAY(date) AS weekday,
-      CASE WHEN WEEKDAY(date) IN (5,6) THEN 1 ELSE 0 END AS is_weekend,
-      SUM(amount) AS total_spent
-    FROM transactions 
-    WHERE user_id = ? 
-    ${stringSuffix} 
-    GROUP BY YEAR(date), MONTH(date), DAY(date), WEEKDAY(date)
-    ORDER BY date DESC`;
+    const queryString = `
+      SELECT 
+        YEAR(date) AS year,
+        MONTH(date) AS month,
+        DAY(date) AS day,
+        WEEKDAY(date) AS weekday,
+        CASE WHEN WEEKDAY(date) IN (5,6) THEN 1 ELSE 0 END AS is_weekend,
+        SUM(amount) AS total_spent
+      FROM transactions 
+      WHERE user_id = ? 
+      ${stringSuffix} 
+      GROUP BY YEAR(date), MONTH(date), DAY(date), WEEKDAY(date)
+      ORDER BY date DESC`;
+
     db.query(queryString, params, (err, results) => {
-      if (err) throw err;
-      const sortedData = results.sort((a, b) => a.total_spent - b.total_spent);
+      if (err) return reject(err);
+
+      const sortedData = results.sort(
+        (a, b) => parseFloat(a.total_spent) - parseFloat(b.total_spent)
+      );
       const total = sortedData.length;
-      const lowerIndex = Math.floor(total * 0.05); // 5% más bajo
+      const lowerIndex = Math.floor(total * 0.05);
       const upperIndex = Math.ceil(total * 0.95);
-
       const filteredData = sortedData.slice(lowerIndex, upperIndex);
-      return {
-        monthSpendings: filteredData,
-      };
-    });
 
-    //retorna todos los datos recopilados
-  } catch (err) {
-    console.error("Error al obtener los datos:", err);
-    throw err;
-  }
+      resolve(filteredData); // Devolvemos directamente el array
+    });
+  });
 }
 
 module.exports = {
   prepareDataMonth,
 };
-
 /*
 async function getDailyFinancialData(date, userId) {
   try {

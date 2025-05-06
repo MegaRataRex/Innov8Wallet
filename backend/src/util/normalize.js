@@ -1,43 +1,40 @@
 const tf = require("@tensorflow/tfjs");
+const monthUtil = require("./monthUtil");
 
-function convertToTensor(data) {
-  // Wrapping these calculations in a tidy will dispose any
-  // intermediate tensors.
-
+function prepareInputsToTensors(data) {
   return tf.tidy(() => {
-    // Step 1. Shuffle the data
     tf.util.shuffle(data);
 
-    // Step 2. Convert data to Tensor
     const inputs = data.map((d) => [d.day, d.month, d.weekday, d.is_weekend]);
-    const labels = data.map((d) => d.mpg);
 
-    const inputTensor = tf.tensor2d(inputs, [inputs.length, 1]);
-    const labelTensor = tf.tensor2d(labels, [labels.length, 1]);
+    const inputTensor = tf.tensor2d(inputs);
 
-    //Step 3. Normalize the data to the range 0 - 1 using min-max scaling
     const inputMax = inputTensor.max();
     const inputMin = inputTensor.min();
-    const labelMax = labelTensor.max();
-    const labelMin = labelTensor.min();
 
     const normalizedInputs = inputTensor
       .sub(inputMin)
       .div(inputMax.sub(inputMin));
-    const normalizedLabels = labelTensor
-      .sub(labelMin)
-      .div(labelMax.sub(labelMin));
+
+    const binaryValues = data.map((d) => {
+      const isPayday =
+        d.day === 15 || d.day === monthUtil.getMonthDays(d.month);
+      const isWeekend =
+        d.weekday === 0 || d.weekday === 6 || d.weekday === 5 ? 1 : 0;
+
+      return {
+        isPayday,
+        isWeekend,
+      };
+    });
 
     return {
       inputs: normalizedInputs,
-      labels: normalizedLabels,
-      // Return the min/max bounds so we can use them later.
-      inputMax,
-      inputMin,
-      labelMax,
-      labelMin,
+      inputMax: inputMax,
+      inputMin: inputMin,
+      binaryValues: binaryValues,
     };
   });
 }
 
-module.exports = { convertToTensor };
+module.exports = { prepareInputsToTensors };
