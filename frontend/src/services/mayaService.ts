@@ -13,7 +13,7 @@ export class MayaService {
   // Consultar a Maya (asistente financiero)
   static async askMaya(userId: number, message: string): Promise<MayaResponse> {
     try {
-      return await ApiFetcher.post<MayaResponse>('/maya', {
+      return await ApiFetcher.post<MayaResponse>('/ask', {
         userId,
         message,
       });

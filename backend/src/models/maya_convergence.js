@@ -19,6 +19,8 @@ router.post("/", async (req, res) => {
     const prompt = `
       Pregunta del usuario:
       ${message}
+      Historial de transacciones del usuario:
+      ${transactions}
     `;
 
     const response = await openaiClient.chat.completions.create({
